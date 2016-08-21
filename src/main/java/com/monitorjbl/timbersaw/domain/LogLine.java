@@ -1,4 +1,4 @@
-package com.monitorjbl.manny.domain;
+package com.monitorjbl.timbersaw.domain;
 
 import java.util.HashMap;
 import java.util.Map;

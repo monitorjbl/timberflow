@@ -1,4 +1,4 @@
-package com.monitorjbl.manny.config;
+package com.monitorjbl.timbersaw.config;
 
 import java.util.List;
 import java.util.regex.Pattern;

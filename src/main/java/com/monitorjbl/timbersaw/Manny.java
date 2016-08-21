@@ -1,13 +1,13 @@
-package com.monitorjbl.manny;
+package com.monitorjbl.timbersaw;
 
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import com.monitorjbl.manny.config.Configuration;
-import com.monitorjbl.manny.filters.DropFilter;
-import com.monitorjbl.manny.filters.GrepFilter;
-import com.monitorjbl.manny.inputs.FileInput;
-import com.monitorjbl.manny.inputs.StdinInput;
-import com.monitorjbl.manny.outputs.StdoutOutput;
+import com.monitorjbl.timbersaw.config.Configuration;
+import com.monitorjbl.timbersaw.filters.DropFilter;
+import com.monitorjbl.timbersaw.filters.GrepFilter;
+import com.monitorjbl.timbersaw.inputs.FileInput;
+import com.monitorjbl.timbersaw.inputs.StdinInput;
+import com.monitorjbl.timbersaw.outputs.StdoutOutput;
 
 public class Manny {
 

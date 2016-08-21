@@ -1,11 +1,11 @@
-package com.monitorjbl.manny.filters;
+package com.monitorjbl.timbersaw.filters;
 
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
-import com.monitorjbl.manny.config.Configuration;
-import com.monitorjbl.manny.config.GrepConfig;
-import com.monitorjbl.manny.domain.LogLine;
-import com.monitorjbl.manny.domain.SingleStep;
+import com.monitorjbl.timbersaw.config.Configuration;
+import com.monitorjbl.timbersaw.config.GrepConfig;
+import com.monitorjbl.timbersaw.domain.LogLine;
+import com.monitorjbl.timbersaw.domain.SingleStep;
 
 import java.util.regex.Matcher;
 

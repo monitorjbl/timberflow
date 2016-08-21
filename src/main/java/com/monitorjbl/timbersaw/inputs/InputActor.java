@@ -1,4 +1,4 @@
-package com.monitorjbl.manny.inputs;
+package com.monitorjbl.timbersaw.inputs;
 
 import akka.actor.UntypedActor;
 

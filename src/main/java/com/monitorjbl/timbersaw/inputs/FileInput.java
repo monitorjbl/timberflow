@@ -1,10 +1,10 @@
-package com.monitorjbl.manny.inputs;
+package com.monitorjbl.timbersaw.inputs;
 
 import akka.actor.ActorSelection;
 import akka.actor.UntypedActor;
-import com.monitorjbl.manny.config.Configuration;
-import com.monitorjbl.manny.domain.LogLine;
-import com.monitorjbl.manny.domain.SingleStep;
+import com.monitorjbl.timbersaw.config.Configuration;
+import com.monitorjbl.timbersaw.domain.LogLine;
+import com.monitorjbl.timbersaw.domain.SingleStep;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 

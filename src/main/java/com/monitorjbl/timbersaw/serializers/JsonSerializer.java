@@ -1,4 +1,4 @@
-package com.monitorjbl.manny.serializers;
+package com.monitorjbl.timbersaw.serializers;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,9 +1,9 @@
-package com.monitorjbl.manny.config;
+package com.monitorjbl.timbersaw.config;
 
-import com.monitorjbl.manny.domain.SingleStep;
-import com.monitorjbl.manny.filters.DropFilter;
-import com.monitorjbl.manny.filters.GrepFilter;
-import com.monitorjbl.manny.outputs.StdoutOutput;
+import com.monitorjbl.timbersaw.domain.SingleStep;
+import com.monitorjbl.timbersaw.filters.DropFilter;
+import com.monitorjbl.timbersaw.filters.GrepFilter;
+import com.monitorjbl.timbersaw.outputs.StdoutOutput;
 
 import java.util.ArrayList;
 import java.util.HashMap;

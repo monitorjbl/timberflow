@@ -1,4 +1,4 @@
-package com.monitorjbl.manny.domain;
+package com.monitorjbl.timbersaw.domain;
 
 public class SingleStep<T> {
   private Integer number;
