@@ -1,9 +1,9 @@
-package com.monitorjbl.timbersaw.config;
+package com.monitorjbl.timbersaw.filters.grep;
 
-import com.monitorjbl.timbersaw.domain.SingleStep;
-import com.monitorjbl.timbersaw.filters.DropFilter;
-import com.monitorjbl.timbersaw.filters.GrepFilter;
-import com.monitorjbl.timbersaw.outputs.StdoutOutput;
+import com.monitorjbl.timbersaw.config.ConfigParser;
+import com.monitorjbl.timbersaw.dsl.DSLPlugin;
+import com.monitorjbl.timbersaw.dsl.KeyValue;
+import com.monitorjbl.timbersaw.filters.grep.GrepConfig.Match;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,11 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.google.common.collect.Lists.newArrayList;
-
-public class Configuration {
-  private static List<SingleStep> steps = new ArrayList<>();
-
+public class GrepConfigParser implements ConfigParser<GrepConfig> {
   //regexes courtesy of logstash (https://github.com/logstash-plugins/logstash-patterns-core)
   private static final Map<String, String> PATTERNS = new HashMap<String, String>() {{
     put("WORD", "\\b\\w+\\b");
@@ -32,18 +28,17 @@ public class Configuration {
     put("PATH", "(?:" + get("UNIXPATH") + "|" + get("WINPATH") + ")");
   }};
 
-  public static void applyConfig() {
-    steps = newArrayList(
-        new SingleStep<>(0, GrepFilter.class.getSimpleName(), generateGrepConfig("message", "%{DATA:timestamplocal}\\|%{NUMBER:duration}\\|%{WORD:requesttype}\\|%{IP:clientip}\\|%{DATA:username}\\|%{WORD:method}\\|%{PATH:resource}\\|%{DATA:protocol}\\|%{NUMBER:statuscode}\\|%{NUMBER:bytes}")),
-        new SingleStep<>(1, DropFilter.class.getSimpleName(), newArrayList("message")),
-        new SingleStep<>(2, StdoutOutput.class.getSimpleName(), "json"));
+  @Override
+  public GrepConfig generateConfig(DSLPlugin dslPlugin) {
+    List<Match> matches = new ArrayList<>();
+    List<KeyValue> kvList = dslPlugin.getMultiProperties().get("match");
+    if(kvList != null) {
+      kvList.forEach(m -> matches.add(generateMatch(m.getKey(), m.getValue())));
+    }
+    return new GrepConfig(matches);
   }
 
-  public static <E> SingleStep<E> step(Integer step) {
-    return steps.get(step);
-  }
-
-  public static GrepConfig generateGrepConfig(String field, String pattern) {
+  public Match generateMatch(String field, String pattern) {
     Pattern group = Pattern.compile("%\\{[^\\}]+\\}");
     Pattern var = Pattern.compile("%\\{\\s*(?<type>[^:]+):\\s*(?<field>[^\\|]+)\\s*\\}");
 
@@ -60,6 +55,6 @@ public class Configuration {
       }
     }
 
-    return new GrepConfig(field, Pattern.compile(replaced), fields);
+    return new Match(field, Pattern.compile(replaced), fields);
   }
 }
