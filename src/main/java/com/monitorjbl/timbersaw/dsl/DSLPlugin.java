@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public class DSLPlugin {
-  private final String name;
   private final Class cls;
   private final Map<String, List<KeyValue>> multiProperties = new HashMap<>();
   private final Map<String, Object> singleProperties = new HashMap<>();
+  private String name;
   private Config config;
 
   public DSLPlugin(String name, Class cls) {
@@ -20,6 +20,10 @@ public class DSLPlugin {
 
   public String getName() {
     return name;
+  }
+
+  void setName(String name) {
+    this.name = name;
   }
 
   public Class getCls() {

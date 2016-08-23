@@ -35,21 +35,27 @@ public class TimberflowCompiler {
 
   private List<SingleStep> generateFlow(DSL dsl) {
     List<SingleStep> steps = new ArrayList<>();
-    AtomicInteger pc = new AtomicInteger();
-    dsl.getInputs().getPlugins().forEach(p-> handleInputPlugin(p));
-    dsl.getFilters().getPlugins().forEach(p -> handlePlugin(steps, pc.getAndIncrement(), p));
-    dsl.getOutputs().getPlugins().forEach(p -> handlePlugin(steps, pc.getAndIncrement(), p));
+
+    AtomicInteger inputCounter = new AtomicInteger();
+    dsl.getInputs().getPlugins().forEach(p -> handleInputPlugin(inputCounter.incrementAndGet(), p));
+
+    AtomicInteger programCounter = new AtomicInteger();
+    dsl.getFilters().getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
+    dsl.getOutputs().getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
     return steps;
   }
 
-  private void handleInputPlugin(DSLPlugin plugin) {
+  private void handleInputPlugin(Integer counter, DSLPlugin plugin) {
     plugin.setConfig(ctx.generatePluginConfig(plugin.getName(), plugin));
+    plugin.setName(plugin.getName() + "-" + counter);
   }
 
   @SuppressWarnings("unchecked")
   private void handlePlugin(List<SingleStep> steps, Integer pc, DSLPlugin plugin) {
     Config config = ctx.generatePluginConfig(plugin.getName(), plugin);
-    steps.add(new SingleStep(pc, ctx.getPluginClass(plugin.getName()).getSimpleName(), config));
+    steps.add(new SingleStep(pc, plugin.getName() + "-" + pc, config));
+    plugin.setConfig(config);
+    plugin.setName(plugin.getName() + "-" + pc);
   }
 
 }
