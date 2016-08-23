@@ -1,7 +1,7 @@
 grammar Timberflow;
 
 @header {
-package com.monitorjbl.timbersaw.dsl;
+package com.monitorjbl.timberflow.dsl;
 }
 
 compilationUnit
