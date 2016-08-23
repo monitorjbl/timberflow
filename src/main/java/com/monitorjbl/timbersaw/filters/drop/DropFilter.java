@@ -2,10 +2,13 @@ package com.monitorjbl.timbersaw.filters.drop;
 
 import com.monitorjbl.timbersaw.domain.LogLine;
 import com.monitorjbl.timbersaw.filters.Filter;
+import com.monitorjbl.timbersaw.inputs.stdin.StdinConfigParser;
+import com.monitorjbl.timbersaw.plugin.Plugin;
 
 import java.util.List;
 import java.util.Map;
 
+@Plugin(dslName = "drop", configParser = DropConfigParser.class)
 public class DropFilter extends Filter<DropConfig> {
   @Override
   protected LogLine apply(LogLine logLine, DropConfig config) {

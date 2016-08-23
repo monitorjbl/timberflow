@@ -2,9 +2,11 @@ package com.monitorjbl.timbersaw.filters.grep;
 
 import com.monitorjbl.timbersaw.domain.LogLine;
 import com.monitorjbl.timbersaw.filters.Filter;
+import com.monitorjbl.timbersaw.plugin.Plugin;
 
 import java.util.regex.Matcher;
 
+@Plugin(dslName = "grep", configParser = GrepConfigParser.class)
 public class GrepFilter extends Filter<GrepConfig> {
 
   @Override

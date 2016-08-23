@@ -1,11 +1,13 @@
 package com.monitorjbl.timbersaw.inputs.file;
 
 import com.monitorjbl.timbersaw.inputs.Input;
+import com.monitorjbl.timbersaw.plugin.Plugin;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
 
+@Plugin(dslName = "file", configParser = FileConfigParser.class)
 public class FileInput extends Input {
   private final String path;
   private final boolean fromBeginning;

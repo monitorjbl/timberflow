@@ -12,12 +12,10 @@ import com.monitorjbl.timbersaw.filters.drop.DropConfigParser;
 import com.monitorjbl.timbersaw.filters.drop.DropFilter;
 import com.monitorjbl.timbersaw.filters.grep.GrepConfigParser;
 import com.monitorjbl.timbersaw.filters.grep.GrepFilter;
-import com.monitorjbl.timbersaw.inputs.file.FileConfigParser;
-import com.monitorjbl.timbersaw.inputs.file.FileInput;
-import com.monitorjbl.timbersaw.inputs.stdin.StdinConfigParser;
-import com.monitorjbl.timbersaw.inputs.stdin.StdinInput;
 import com.monitorjbl.timbersaw.outputs.stdout.StdoutConfigParser;
 import com.monitorjbl.timbersaw.outputs.stdout.StdoutOutput;
+import com.monitorjbl.timbersaw.plugin.Plugin;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +27,18 @@ public class Timberflow {
 
   private static DSL compile(String source) {
     CompilationContext ctx = new CompilationContext();
-    //TODO: gather this from classpath scanning
-    ctx.addEntry("stdin", StdinInput.class, new StdinConfigParser());
-    ctx.addEntry("file", FileInput.class, new FileConfigParser());
-    ctx.addEntry("grep", GrepFilter.class, new GrepConfigParser());
-    ctx.addEntry("drop", DropFilter.class, new DropConfigParser());
-    ctx.addEntry("stdout", StdoutOutput.class, new StdoutConfigParser());
+    Reflections reflections = new Reflections();
+    reflections.getTypesAnnotatedWith(Plugin.class).forEach(t -> addPlugin(ctx, t));
     return new TimberflowCompiler(ctx).compile(source);
+  }
+
+  private static void addPlugin(CompilationContext ctx, Class t) {
+    try {
+      Plugin plugin = (Plugin) t.getAnnotation(Plugin.class);
+      ctx.addEntry(plugin.dslName(), t, plugin.configParser().newInstance());
+    } catch(InstantiationException | IllegalAccessException e) {
+      throw new IllegalArgumentException("Could not start plugin " + t, e);
+    }
   }
 
   private static void startActor(ActorSystem system, DSLPlugin plugin) {
@@ -61,7 +64,7 @@ public class Timberflow {
     log.debug("Starting input actors");
     dsl.getInputs().getPlugins().forEach(input -> startActor(system, input));
 
-    log.info("Started in {}ms", (System.currentTimeMillis() - start));
+    log.info("Started up in {}ms", (System.currentTimeMillis() - start));
     while(true) {
       Thread.sleep(100);
     }
