@@ -13,10 +13,11 @@ public abstract class Filter<T extends Config> extends UntypedActor {
   public void onReceive(Object message) throws Throwable {
     if(message instanceof LogLine) {
       LogLine logLine = (LogLine) message;
-      SingleStep<T> current = RuntimeConfiguration.step(logLine.getCurrentStep());
-      SingleStep<T> next = RuntimeConfiguration.step(logLine.getCurrentStep() + 1);
+      SingleStep<T> current = RuntimeConfiguration.step(logLine);
 
       logLine = apply(logLine, current.getConfig());
+
+      SingleStep<T> next = RuntimeConfiguration.nextStep(logLine);
       ActorSelection nextActor = context().actorSelection("../" + next.getName());
       nextActor.tell(new LogLine(next.getNumber(), logLine.getFields()), self());
     } else {

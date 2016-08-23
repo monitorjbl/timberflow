@@ -28,9 +28,6 @@ public class Timberflow {
   private static final Logger log = LoggerFactory.getLogger(Timberflow.class);
   private static final String ANSI_RESET = "\u001B[0m";
   private static final String ANSI_GREEN = "\u001B[32m";
-  private static final String ANSI_YELLOW = "\u001B[33m";
-  private static final String ANSI_CYAN = "\u001B[36m";
-  private static final String ANSI_WHITE = "\u001B[37m";
 
   @Option(name = "--config", required = true, usage = "Path to the config file")
   private File configFile;
@@ -53,6 +50,7 @@ public class Timberflow {
 
   private void startActor(ActorSystem system, DSLPlugin plugin) {
     List<Object> props = plugin.getConfig().getConstructorArgs();
+    System.out.println(plugin.getName());
     system.actorOf(Props.create(plugin.getCls(), props.toArray(new Object[props.size()])), plugin.getName());
   }
 
@@ -73,13 +71,13 @@ public class Timberflow {
 
     log.debug("Starting filter actors");
     ActorSystem system = ActorSystem.create("timberflow");
-    dsl.getFilters().getPlugins().forEach(filter -> startActor(system, filter));
+    dsl.filterPlugins().forEach(filter -> startActor(system, filter));
 
     log.debug("Starting output actors");
-    dsl.getOutputs().getPlugins().forEach(output -> startActor(system, output));
+    dsl.outputPlugins().forEach(output -> startActor(system, output));
 
     log.debug("Starting input actors");
-    dsl.getInputs().getPlugins().forEach(input -> startActor(system, input));
+    dsl.inputPlugins().forEach(input -> startActor(system, input));
 
     System.out.println(String.format("%sStarted up in%s %dms", ANSI_GREEN, ANSI_RESET, (System.currentTimeMillis() - start)));
   }

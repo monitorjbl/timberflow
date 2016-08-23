@@ -1,7 +1,9 @@
 package com.monitorjbl.timbersaw.dsl;
 
 import com.monitorjbl.timbersaw.config.Config;
+import com.monitorjbl.timbersaw.domain.ConditionalStep;
 import com.monitorjbl.timbersaw.domain.SingleStep;
+import com.monitorjbl.timbersaw.domain.Step;
 import com.monitorjbl.timbersaw.dsl.TimberflowParser.CompilationUnitContext;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,15 +35,15 @@ public class TimberflowCompiler {
     return dsl;
   }
 
-  private List<SingleStep> generateFlow(DSL dsl) {
-    List<SingleStep> steps = new ArrayList<>();
+  private List<Step> generateFlow(DSL dsl) {
+    List<Step> steps = new ArrayList<>();
 
     AtomicInteger inputCounter = new AtomicInteger();
-    dsl.getInputs().getPlugins().forEach(p -> handleInputPlugin(inputCounter.incrementAndGet(), p));
+    dsl.inputPlugins().forEach(p -> handleInputPlugin(inputCounter.incrementAndGet(), p));
 
     AtomicInteger programCounter = new AtomicInteger();
-    dsl.getFilters().getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
-    dsl.getOutputs().getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
+    dsl.getFilters().forEach(s -> handleStatement(steps, programCounter, s));
+    dsl.getOutputs().forEach(s -> handleStatement(steps, programCounter, s));
     return steps;
   }
 
@@ -50,8 +52,19 @@ public class TimberflowCompiler {
     plugin.setName(plugin.getName() + "-" + counter);
   }
 
+  private void handleStatement(List<Step> steps, AtomicInteger programCounter, DSLBlockStatement statement) {
+    Integer pc = programCounter.getAndIncrement();
+    if(statement instanceof DSLPlugin) {
+      handlePlugin(steps, pc, (DSLPlugin) statement);
+    } else if(statement instanceof DSLBranch) {
+      DSLBranch branch = ((DSLBranch) statement);
+      steps.add(new ConditionalStep(pc, branch.getComparison(), pc + branch.getPlugins().size()));
+      branch.getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
+    }
+  }
+
   @SuppressWarnings("unchecked")
-  private void handlePlugin(List<SingleStep> steps, Integer pc, DSLPlugin plugin) {
+  private void handlePlugin(List<Step> steps, Integer pc, DSLPlugin plugin) {
     Config config = ctx.generatePluginConfig(plugin.getName(), plugin);
     steps.add(new SingleStep(pc, plugin.getName() + "-" + pc, config));
     plugin.setConfig(config);

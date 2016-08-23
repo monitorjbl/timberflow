@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DSLPlugin {
+public class DSLPlugin implements DSLBlockStatement {
   private final Class cls;
   private final Map<String, List<KeyValue>> multiProperties = new HashMap<>();
   private final Map<String, Object> singleProperties = new HashMap<>();

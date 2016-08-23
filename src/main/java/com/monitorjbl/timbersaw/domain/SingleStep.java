@@ -1,6 +1,6 @@
 package com.monitorjbl.timbersaw.domain;
 
-public class SingleStep<T> {
+public class SingleStep<T> implements Step {
   private Integer number;
   private String name;
   private T config;

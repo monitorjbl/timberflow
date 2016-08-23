@@ -9,23 +9,32 @@ compilationUnit
   ;
 
 inputBlock
-  : Inputs block
+  : Inputs BlockOpen blockStatement* BlockClose
   ;
 
 filterBlock
-  : Filters block
+  : Filters BlockOpen blockStatement* BlockClose
   ;
 
 outputBlock
-  : Outputs block
+  : Outputs BlockOpen blockStatement* BlockClose
   ;
 
-block
-  : BlockOpen plugin* BlockClose
+blockStatement
+  : plugin
+  | branch
   ;
 
 plugin
   : Identifier BlockOpen configuration* BlockClose
+  ;
+
+branch
+  : If BraceOpen condition BraceClose BlockOpen plugin* BlockClose
+  ;
+
+condition
+  : Identifier Comparison StringLiteral (BooleanOperator Identifier Comparison StringLiteral)*
   ;
 
 configuration
@@ -56,20 +65,30 @@ Filters
   : 'filters';
 Outputs
   : 'outputs';
+If
+  : 'if';
 
 // Language constants
 BlockOpen
   : Newline* '{' Newline*;
 BlockClose
   : Newline* '}' Newline*;
+BraceOpen
+  : Newline* '[' Newline*;
+BraceClose
+  : Newline* ']' Newline*;
 Comma
   : ',' Newline*;
 Dot
   : '.' Newline*;
+Comparison
+  : '==' | '!=';
 Equals
   : '=' Newline*;
 Colon
   : ':' Newline*;
+BooleanOperator
+  : 'or' | 'and';
 BooleanLiteral
     : 'true' | 'false';
 Identifier

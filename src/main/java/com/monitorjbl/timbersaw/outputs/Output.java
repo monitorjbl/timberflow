@@ -12,7 +12,7 @@ public abstract class Output<T extends Config> extends UntypedActor {
   public void onReceive(Object message) throws Throwable {
     if(message instanceof LogLine) {
       LogLine logLine = (LogLine) message;
-      apply(logLine, (T) RuntimeConfiguration.step(logLine.getCurrentStep()).getConfig());
+      apply(logLine, (T) RuntimeConfiguration.step(logLine).getConfig());
     } else {
       unhandled(message);
     }

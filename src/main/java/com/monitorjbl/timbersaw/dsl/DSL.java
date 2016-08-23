@@ -1,45 +1,74 @@
 package com.monitorjbl.timbersaw.dsl;
 
-import com.monitorjbl.timbersaw.domain.SingleStep;
+import com.monitorjbl.timbersaw.domain.Step;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DSL {
-  private DSLBlock inputs;
-  private DSLBlock filters;
-  private DSLBlock outputs;
-  private List<SingleStep> steps = new ArrayList<>();
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
-  public DSLBlock getInputs() {
+public class DSL {
+  private List<DSLPlugin> inputs = new ArrayList<>();
+  private List<DSLBlockStatement> filters = new ArrayList<>();
+  private List<DSLBlockStatement> outputs = new ArrayList<>();
+  private List<Step> steps = new ArrayList<>();
+
+  public List<DSLPlugin> getInputs() {
     return inputs;
   }
 
-  public void setInputs(DSLBlock inputs) {
+  void setInputs(List<DSLPlugin> inputs) {
     this.inputs = inputs;
   }
 
-  public DSLBlock getFilters() {
+  List<DSLBlockStatement> getFilters() {
     return filters;
   }
 
-  public void setFilters(DSLBlock filters) {
+  void setFilters(List<DSLBlockStatement> filters) {
     this.filters = filters;
   }
 
-  public DSLBlock getOutputs() {
+  List<DSLBlockStatement> getOutputs() {
     return outputs;
   }
 
-  public void setOutputs(DSLBlock outputs) {
+  void setOutputs(List<DSLBlockStatement> outputs) {
     this.outputs = outputs;
   }
 
-  public List<SingleStep> getSteps() {
+  public List<Step> getSteps() {
     return steps;
   }
 
-  public void setSteps(List<SingleStep> steps) {
+  void setSteps(List<Step> steps) {
     this.steps = steps;
+  }
+
+  public List<DSLPlugin> inputPlugins() {
+    return inputs;
+  }
+
+  public List<DSLPlugin> filterPlugins() {
+    return filters.stream()
+        .flatMap(s -> findPlugins(s).stream())
+        .collect(toList());
+  }
+
+  public List<DSLPlugin> outputPlugins() {
+    return outputs.stream()
+        .flatMap(s -> findPlugins(s).stream())
+        .collect(toList());
+  }
+
+  private List<DSLPlugin> findPlugins(DSLBlockStatement s) {
+    if(s instanceof DSLPlugin) {
+      return singletonList((DSLPlugin) s);
+    } else if(s instanceof DSLBranch) {
+      return ((DSLBranch) s).getPlugins();
+    } else {
+      throw new IllegalArgumentException("Cannot parse " + s.getClass());
+    }
   }
 }
