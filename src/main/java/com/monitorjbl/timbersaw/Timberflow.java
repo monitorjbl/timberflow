@@ -4,8 +4,8 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import com.google.common.io.Resources;
 import com.monitorjbl.timbersaw.config.RuntimeConfiguration;
-import com.monitorjbl.timbersaw.domain.SingleStep;
 import com.monitorjbl.timbersaw.dsl.CompilationContext;
+import com.monitorjbl.timbersaw.dsl.DSL;
 import com.monitorjbl.timbersaw.dsl.TimberflowCompiler;
 import com.monitorjbl.timbersaw.filters.drop.DropConfigParser;
 import com.monitorjbl.timbersaw.filters.drop.DropFilter;
@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Timberflow {
   private static final Logger log = LoggerFactory.getLogger(Timberflow.class);
@@ -36,15 +37,17 @@ public class Timberflow {
     ctx.addEntry("grep", GrepFilter.class, new GrepConfigParser());
     ctx.addEntry("drop", DropFilter.class, new DropConfigParser());
     ctx.addEntry("stdout", StdoutOutput.class, new StdoutConfigParser());
-    List<SingleStep> steps = new TimberflowCompiler(ctx).compile(test);
-    RuntimeConfiguration.applyConfig(steps);
+    DSL dsl = new TimberflowCompiler(ctx).compile(test);
+    RuntimeConfiguration.applyConfig(dsl.getSteps());
     log.debug("Loaded configuration");
 
     log.debug("Starting actors");
     ActorSystem system = ActorSystem.create("timberflow");
-    system.actorOf(Props.create(StdinInput.class), StdinInput.class.getSimpleName());
-    system.actorOf(Props.create(FileInput.class, "/tmp/test1", true), FileInput.class.getSimpleName() + "-1");
-    system.actorOf(Props.create(FileInput.class, "/tmp/test2", false), FileInput.class.getSimpleName() + "-2");
+    AtomicInteger actorCount = new AtomicInteger(0);
+    dsl.getInputs().getPlugins().forEach(input -> {
+      List<Object> props = input.getConfig().getConstructorArgs();
+      system.actorOf(Props.create(input.getCls(), props.toArray(new Object[props.size()])), input.getName() + "-" + actorCount.getAndIncrement());
+    });
     system.actorOf(Props.create(GrepFilter.class), GrepFilter.class.getSimpleName());
     system.actorOf(Props.create(DropFilter.class), DropFilter.class.getSimpleName());
     system.actorOf(Props.create(StdoutOutput.class), StdoutOutput.class.getSimpleName());

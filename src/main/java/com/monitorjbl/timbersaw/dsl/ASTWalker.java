@@ -10,9 +10,16 @@ import java.util.List;
 
 public class ASTWalker extends TimberflowBaseListener {
   private static Logger log = LoggerFactory.getLogger(ASTWalker.class);
+
+  private final CompilationContext compilationCtx;
+
   private DSL dsl = new DSL();
   private DSLBlock currentBlock;
   private DSLPlugin currentPlugin;
+
+  public ASTWalker(CompilationContext compilationCtx) {
+    this.compilationCtx = compilationCtx;
+  }
 
   @Override
   public void enterInputBlock(TimberflowParser.InputBlockContext ctx) { setCurrentBlock("inputs"); }
@@ -68,8 +75,9 @@ public class ASTWalker extends TimberflowBaseListener {
   }
 
   private void setCurrentPlugin(TimberflowParser.PluginContext ctx) {
-    log.trace("Starting parse of plugin {}", ctx.Identifier().getText());
-    currentPlugin = new DSLPlugin(ctx.Identifier().getText());
+    String name = ctx.Identifier().getText();
+    log.trace("Starting parse of plugin {}", name);
+    currentPlugin = new DSLPlugin(name, compilationCtx.getPluginClass(name));
   }
 
   private String stripStringLiteral(TerminalNode node) {

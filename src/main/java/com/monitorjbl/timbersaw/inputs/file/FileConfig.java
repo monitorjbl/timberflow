@@ -3,16 +3,19 @@ package com.monitorjbl.timbersaw.inputs.file;
 import com.monitorjbl.timbersaw.config.Config;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 public class FileConfig implements Config {
-  private boolean fromBeginning;
   private String path;
+  private boolean fromBeginning;
   private Map<String, String> addFields = new HashMap<>();
 
-  public FileConfig(boolean fromBeginning, String path, Map<String, String> addFields) {
-    this.fromBeginning = fromBeginning;
+  public FileConfig(String path, boolean fromBeginning, Map<String, String> addFields) {
     this.path = path;
+    this.fromBeginning = fromBeginning;
     this.addFields = addFields;
   }
 
@@ -26,5 +29,10 @@ public class FileConfig implements Config {
 
   public Map<String, String> getAddFields() {
     return addFields;
+  }
+
+  @Override
+  public List<Object> getConstructorArgs() {
+    return asList(path, fromBeginning);
   }
 }

@@ -22,7 +22,7 @@ public class FileConfigParser implements ConfigParser<FileConfig> {
       throw new IllegalStateException("path is required for file{} plugins");
     }
     if(!new File(path).exists()) {
-      throw new IllegalStateException("path must exist for file{} plugins");
+      throw new IllegalStateException("path must exist for file{} plugins ('" + path + "' not found)");
     }
 
     boolean fromBeginning = false;
@@ -30,6 +30,6 @@ public class FileConfigParser implements ConfigParser<FileConfig> {
       fromBeginning = (boolean) dslPlugin.getSingleProperties().get("from_beginning");
     }
 
-    return new FileConfig(fromBeginning, path, addFields);
+    return new FileConfig(path, fromBeginning, addFields);
   }
 }

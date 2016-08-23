@@ -1,5 +1,6 @@
 package com.monitorjbl.timbersaw.dsl;
 
+import com.monitorjbl.timbersaw.config.Config;
 import com.monitorjbl.timbersaw.domain.SingleStep;
 import com.monitorjbl.timbersaw.dsl.TimberflowParser.CompilationUnitContext;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -17,30 +18,38 @@ public class TimberflowCompiler {
     this.ctx = ctx;
   }
 
-  public List<SingleStep> compile(String src) {
+  public DSL compile(String src) {
     TimberflowLexer lexer = new TimberflowLexer(new ANTLRInputStream(src));
     CommonTokenStream tokens = new CommonTokenStream(lexer);
     TimberflowParser parser = new TimberflowParser(tokens);
     CompilationUnitContext context = parser.compilationUnit();
 
     ParseTreeWalker treeWalker = new ParseTreeWalker();
-    ASTWalker astWalker = new ASTWalker();
+    ASTWalker astWalker = new ASTWalker(ctx);
     treeWalker.walk(astWalker, context);
 
-    return generateFlow(astWalker.getDsl());
+    DSL dsl = astWalker.getDsl();
+    dsl.setSteps(generateFlow(dsl));
+    return dsl;
   }
 
   private List<SingleStep> generateFlow(DSL dsl) {
     List<SingleStep> steps = new ArrayList<>();
     AtomicInteger pc = new AtomicInteger();
-
-    dsl.getFilters().getPlugins().forEach(p -> steps.add(generateStep(pc.getAndIncrement(), p)));
-    dsl.getOutputs().getPlugins().forEach(p -> steps.add(generateStep(pc.getAndIncrement(), p)));
+    dsl.getInputs().getPlugins().forEach(p-> handleInputPlugin(p));
+    dsl.getFilters().getPlugins().forEach(p -> handlePlugin(steps, pc.getAndIncrement(), p));
+    dsl.getOutputs().getPlugins().forEach(p -> handlePlugin(steps, pc.getAndIncrement(), p));
     return steps;
   }
 
-  @SuppressWarnings("unchecked")
-  private SingleStep generateStep(int index, DSLPlugin plugin) {
-    return new SingleStep(index, ctx.getPluginClass(plugin.getName()).getSimpleName(), ctx.generatePluginConfig(plugin.getName(), plugin));
+  private void handleInputPlugin(DSLPlugin plugin) {
+    plugin.setConfig(ctx.generatePluginConfig(plugin.getName(), plugin));
   }
+
+  @SuppressWarnings("unchecked")
+  private void handlePlugin(List<SingleStep> steps, Integer pc, DSLPlugin plugin) {
+    Config config = ctx.generatePluginConfig(plugin.getName(), plugin);
+    steps.add(new SingleStep(pc, ctx.getPluginClass(plugin.getName()).getSimpleName(), config));
+  }
+
 }
