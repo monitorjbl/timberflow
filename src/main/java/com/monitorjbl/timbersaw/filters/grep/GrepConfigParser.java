@@ -13,6 +13,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GrepConfigParser implements ConfigParser<GrepConfig> {
+  private final static Pattern EXTRACTOR = Pattern.compile("%\\{[^\\}]+\\}");
+  private final static Pattern EXTRACTOR_DETAIL = Pattern.compile("%\\{\\s*(?<type>[^:]+):\\s*(?<field>[^\\|]+)\\s*\\}");
+  private final static Pattern NAMED_GROUP = Pattern.compile("\\(\\?<([a-zA-Z_]+)>(.*)\\)");
+  //The Java spec doesn't allow regex named groups to contain regexes.
+  //This value should be substituted in its place and substituted back
+  //out when saving the field name
+  public static final String UNDERSCORE = "TFLOWUSCORE";
   //regexes courtesy of logstash (https://github.com/logstash-plugins/logstash-patterns-core)
   private static final Map<String, String> PATTERNS = new HashMap<String, String>() {{
     put("WORD", "\\b\\w+\\b");
@@ -39,19 +46,25 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
   }
 
   public Match generateMatch(String field, String pattern) {
-    Pattern group = Pattern.compile("%\\{[^\\}]+\\}");
-    Pattern var = Pattern.compile("%\\{\\s*(?<type>[^:]+):\\s*(?<field>[^\\|]+)\\s*\\}");
-
     String replaced = pattern;
-    List<String> fields = new ArrayList<>();
-    Matcher matcher = group.matcher(pattern);
 
-    while(matcher.find()) {
-      String extractor = matcher.group();
-      Matcher m = var.matcher(extractor);
-      if(m.matches()) {
-        fields.add(m.group("field"));
-        replaced = replaced.replace(extractor, String.format("(?<%s>%s)", m.group("field"), PATTERNS.get(m.group("type"))));
+    //replace all underscored named groups
+    Matcher namedGroupMatch = NAMED_GROUP.matcher(replaced);
+    while(namedGroupMatch.find()) {
+      String namedGroup = namedGroupMatch.group();
+      replaced = replaced.replace(namedGroup, namedGroup.replaceAll("_", UNDERSCORE));
+    }
+
+    //replace all extractors
+    List<String> fields = new ArrayList<>();
+    Matcher extractorMatch = EXTRACTOR.matcher(pattern);
+    while(extractorMatch.find()) {
+      String extractor = extractorMatch.group();
+      Matcher extractorDetail = EXTRACTOR_DETAIL.matcher(extractor);
+      if(extractorDetail.matches()) {
+        String f = extractorDetail.group("field").replaceAll("_", UNDERSCORE);
+        fields.add(f);
+        replaced = replaced.replace(extractor, String.format("(?<%s>%s)", f, PATTERNS.get(extractorDetail.group("type"))));
       }
     }
 

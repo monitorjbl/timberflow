@@ -46,6 +46,10 @@ public class ASTWalker extends TimberflowBaseListener {
     if(ctx.Equals() != null) {
       if(ctx.StringLiteral() != null) {
         currentPlugin.getSingleProperties().put(key, stripStringLiteral(ctx.StringLiteral()));
+      } else if(ctx.BooleanLiteral() != null) {
+        currentPlugin.getSingleProperties().put(key, Boolean.valueOf(ctx.BooleanLiteral().getText()));
+      } else if(ctx.IntegerLiteral() != null) {
+        currentPlugin.getSingleProperties().put(key, Integer.valueOf(ctx.BooleanLiteral().getText()));
       } else if(ctx.map() != null) {
         currentPlugin.getSingleProperties().put(key, ctx.map());
       }

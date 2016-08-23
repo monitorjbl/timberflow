@@ -21,10 +21,15 @@ public class FileConfigParser implements ConfigParser<FileConfig> {
     if(path == null) {
       throw new IllegalStateException("path is required for file{} plugins");
     }
-    if(!new File(path).exists()){
+    if(!new File(path).exists()) {
       throw new IllegalStateException("path must exist for file{} plugins");
     }
 
-    return new FileConfig(path, addFields);
+    boolean fromBeginning = false;
+    if(dslPlugin.getSingleProperties().containsKey("from_beginning")) {
+      fromBeginning = (boolean) dslPlugin.getSingleProperties().get("from_beginning");
+    }
+
+    return new FileConfig(fromBeginning, path, addFields);
   }
 }

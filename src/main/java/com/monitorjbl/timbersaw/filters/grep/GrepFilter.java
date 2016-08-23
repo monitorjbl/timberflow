@@ -13,7 +13,7 @@ public class GrepFilter extends Filter<GrepConfig> {
       if(logLine.getFields().containsKey(m.getField())) {
         Matcher matcher = m.getRegex().matcher(logLine.getField(m.getField()));
         if(matcher.matches()) {
-          m.getFields().forEach(field -> logLine.getFields().put(field, matcher.group(field)));
+          m.getFields().forEach(field -> logLine.getFields().put(field.replaceAll(GrepConfigParser.UNDERSCORE, "_"), matcher.group(field)));
         }
       }
     });

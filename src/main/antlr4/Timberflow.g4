@@ -29,9 +29,10 @@ plugin
   ;
 
 configuration
-  : Identifier map
+  : Identifier Equals BooleanLiteral
+  | Identifier Equals IntegerLiteral
   | Identifier Equals StringLiteral
-  | BlockOpen BlockClose
+  | Identifier map
   ;
 
 map
@@ -69,10 +70,11 @@ Equals
   : '=' Newline*;
 Colon
   : ':' Newline*;
+BooleanLiteral
+    : 'true' | 'false';
 Identifier
   : [a-zA-Z_][a-zA-Z_0-9]*;
-BooleanLiteral
-  : 'true' | 'false';
+
 StringLiteral
   : '"' ~('\r' | '\n' | '"')* '"'
   ;

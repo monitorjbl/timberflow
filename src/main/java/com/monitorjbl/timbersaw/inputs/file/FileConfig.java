@@ -6,12 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileConfig implements Config {
+  private boolean fromBeginning;
   private String path;
   private Map<String, String> addFields = new HashMap<>();
 
-  public FileConfig(String path, Map<String, String> addFields) {
+  public FileConfig(boolean fromBeginning, String path, Map<String, String> addFields) {
+    this.fromBeginning = fromBeginning;
     this.path = path;
     this.addFields = addFields;
+  }
+
+  public boolean isFromBeginning() {
+    return fromBeginning;
   }
 
   public String getPath() {

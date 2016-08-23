@@ -8,10 +8,12 @@ import java.io.File;
 
 public class FileInput extends Input {
   private final String path;
+  private final boolean fromBeginning;
   private Tailer tailer;
 
-  public FileInput(String path) {
+  public FileInput(String path, boolean fromBeginning) {
     this.path = path;
+    this.fromBeginning = fromBeginning;
   }
 
   @Override
@@ -25,6 +27,6 @@ public class FileInput extends Input {
       public void handle(String line) {
         sendMessage(line);
       }
-    }, 1, true);
+    }, 1, !fromBeginning);
   }
 }
