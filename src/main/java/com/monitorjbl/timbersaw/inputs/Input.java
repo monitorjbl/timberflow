@@ -6,16 +6,20 @@ import com.monitorjbl.timbersaw.config.RuntimeConfiguration;
 import com.monitorjbl.timbersaw.domain.LogLine;
 import com.monitorjbl.timbersaw.domain.SingleStep;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class Input extends UntypedActor {
   @Override
   public final void onReceive(Object message) throws Throwable { }
 
   protected void sendMessage(String message) {
-    Map<String, String> fields = new HashMap<>();
+    Map<String, String> fields = new TreeMap<>();
     fields.put("message", message);
+    fields.put("@timestamp", ZonedDateTime.now(ZoneOffset.UTC).toString());
 
     SingleStep next = RuntimeConfiguration.step(0);
     ActorSelection nextActor = context().actorSelection("../" + next.getName());

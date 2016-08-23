@@ -3,6 +3,7 @@ package com.monitorjbl.timbersaw.serializers;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JsonSerializer {
 
@@ -10,6 +11,7 @@ public class JsonSerializer {
 
   static {
     mapper.setSerializationInclusion(Include.NON_NULL);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
   }
 
   public static String serialize(Object obj) {
