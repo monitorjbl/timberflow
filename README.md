@@ -1,3 +1,5 @@
+[![Run Status](https://api.shippable.com/projects/57bbdd43503ad81000c7660c/badge?branch=master)](https://app.shippable.com/projects/57bbdd43503ad81000c7660c)
+
 # Timberflow
 
 Yet another log parsing application with a tree-related name. Built using Akka + Java8, mostly because I wanted to.
