@@ -5,4 +5,4 @@ jdk:
 
 build:
   ci:
-    - mvn clean package -B
+    - ./gradlew build
