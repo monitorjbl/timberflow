@@ -54,3 +54,8 @@ outputs {
   stdout {}
 }
 ```
+
+# Plugins
+
+Timberflow is entirely powered by plugins. Plugins are not complex to create, the only requirement is that authors implement a few interfaces. Other than
+that, the can construct their JAR files as they wish.
