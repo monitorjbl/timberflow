@@ -6,19 +6,23 @@ Yet another log parsing application with a tree-related name. Built using Akka +
 
 # Building
 
+Builds a distributable archive in `build/timberflow.zip` that you can extract to install Timberflow
+
 ```bash
 git clone git@github.com:monitorjbl/timberflow.git
 cd timberflow
-mvn clean package
+./gradlew dist
 ```
 
 # Running
 
 ```bash
-java -jar target/timberflow.jar --config pipeline.conf
+bin/timberflow --config /path/to/config.conf
 ```
 
 # Configuration
+
+Configuration is done through a simple language:
 
 ```
 inputs {
