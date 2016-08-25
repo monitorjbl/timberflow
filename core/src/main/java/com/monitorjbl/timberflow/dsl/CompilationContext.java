@@ -32,7 +32,19 @@ public class CompilationContext {
 
   private void assertExists(String name) {
     if(!plugins.containsKey(name)) {
-      throw new IllegalArgumentException("No definition for '" + name + "'");
+      throw new PluginNotFoundException(name);
+    }
+  }
+
+  public static class PluginNotFoundException extends RuntimeException {
+    private final String name;
+
+    public PluginNotFoundException(String name) {
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
     }
   }
 }

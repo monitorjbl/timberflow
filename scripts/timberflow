@@ -3,5 +3,5 @@
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 APP_HOME="$( cd $BIN_DIR/.. && pwd )"
 
-java -cp $APP_HOME/lib/*:$APP_HOME/plugins/* com.monitorjbl.timberflow.Timberflow $@
+java -cp $APP_HOME/lib/'*' com.monitorjbl.timberflow.Timberflow $@
 
