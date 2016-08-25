@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.filters.drop;
+package com.monitorjbl.timberflow.plugins.drop;
 
 import com.monitorjbl.timberflow.api.Config;
 

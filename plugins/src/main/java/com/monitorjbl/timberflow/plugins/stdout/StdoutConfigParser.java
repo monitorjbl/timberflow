@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.outputs.stdout;
+package com.monitorjbl.timberflow.plugins.stdout;
 
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.PluginContent;

@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.inputs.file;
+package com.monitorjbl.timberflow.plugins.file;
 
 import com.monitorjbl.timberflow.api.Input;
 import com.monitorjbl.timberflow.api.MessageSender;

@@ -1,8 +1,8 @@
-package com.monitorjbl.timberflow.inputs.file;
+package com.monitorjbl.timberflow.plugins.file;
 
 import com.monitorjbl.timberflow.api.ConfigParser;
-import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
 import com.monitorjbl.timberflow.api.PluginContent;
+import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
 
 import java.io.File;
 import java.util.Map;

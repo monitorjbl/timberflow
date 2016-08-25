@@ -1,1 +1,23 @@
-apply plugin: 'java'
+plugins {
+  id 'java'
+  id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile project(':api')
+  compile 'com.google.guava:guava:19.0'
+  compile 'commons-io:commons-io:2.5'
+  compile 'com.fasterxml.jackson.core:jackson-core:2.8.1'
+  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
+}
+
+shadowJar {
+  baseName = 'plugins'
+  classifier = null
+  version = null
+}
+

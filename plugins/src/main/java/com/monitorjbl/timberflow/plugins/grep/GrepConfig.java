@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.filters.grep;
+package com.monitorjbl.timberflow.plugins.grep;
 
 import com.monitorjbl.timberflow.api.Config;
 

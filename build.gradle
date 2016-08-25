@@ -1,4 +1,41 @@
-
 repositories {
   jcenter()
+}
+
+task explodeDist(type: Copy) {
+  dependsOn('api:build')
+  dependsOn('core:build')
+  dependsOn('plugins:shadowJar')
+
+  from zipTree(file('core/build/distributions/core.zip'))
+  into file("${buildDir}")
+}
+
+task copyPlugins(type: Copy) {
+  dependsOn('explodeDist')
+
+  from file('plugins/build/libs/plugins.jar')
+  into file("${buildDir}/core/plugins")
+  rename("plugins.jar", "core-plugins.jar")
+}
+
+task updateDist(dependsOn: 'copyPlugins') << {
+  new File("${buildDir}/core").renameTo(new File("${buildDir}/timberflow"))
+  new File("${buildDir}/timberflow/bin/timberflow").bytes = new File("${projectDir.absolutePath}/scripts/timberflow").bytes
+}
+
+task compileDist(type: Zip) {
+  dependsOn('updateDist')
+
+  from "${buildDir}/timberflow"
+  destinationDir file("${buildDir}")
+  baseName "timberflow"
+}
+
+task dist(description: 'Compiles a distributable archive and exploded archive in the build directory') {
+  dependsOn('compileDist')
+}
+
+task clean() {
+  file(buildDir).deleteDir()
 }

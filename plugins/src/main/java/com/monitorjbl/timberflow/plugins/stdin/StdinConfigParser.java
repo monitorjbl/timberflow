@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.inputs.stdin;
+package com.monitorjbl.timberflow.plugins.stdin;
 
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.PluginContent;
