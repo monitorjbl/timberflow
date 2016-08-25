@@ -1,42 +1,4 @@
-plugins {
-  id 'java'
-  id 'antlr'
-  id 'com.github.johnrengelman.shadow' version '1.2.3'
-}
 
 repositories {
   jcenter()
-}
-
-dependencies {
-  antlr 'org.antlr:antlr4:4.5'
-
-  compile 'com.typesafe.akka:akka-actor_2.11:2.4.9'
-  compile 'org.antlr:antlr4:4.5.3'
-  compile 'com.google.guava:guava:19.0'
-  compile 'commons-io:commons-io:2.5'
-  compile 'com.fasterxml.jackson.core:jackson-core:2.8.1'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.8.1'
-  compile 'args4j:args4j:2.33'
-  compile 'org.reflections:reflections:0.9.10'
-  compile 'org.slf4j:slf4j-api:1.7.21'
-  compile 'org.slf4j:slf4j-log4j12:1.7.21'
-
-  testCompile 'junit:junit:4.12'
-}
-
-generateGrammarSource {
-  outputDirectory = new File("${project.buildDir}/generated-src/antlr/main/com/monitorjbl/timberflow/dsl".toString())
-}
-
-shadowJar {
-  baseName = 'timberflow'
-  classifier = null
-  version = null
-}
-
-jar {
-  manifest {
-    attributes 'Main-Class': 'com.monitorjbl.timberflow.Timberflow'
-  }
 }
