@@ -8,9 +8,9 @@ import com.monitorjbl.timberflow.serializers.JsonSerializer;
 import java.util.Map;
 
 @Plugin(dslName = "stdout", configParser = StdoutConfigParser.class)
-public class StdoutOutput extends Output<StdoutConfig> {
+public class StdoutOutput implements Output<StdoutConfig> {
   @Override
-  protected void apply(LogLine logLine, StdoutConfig config) {
+  public void apply(LogLine logLine, StdoutConfig config) {
     System.out.println(serialize(config.getType(), logLine.getFields()));
     System.out.flush();
   }

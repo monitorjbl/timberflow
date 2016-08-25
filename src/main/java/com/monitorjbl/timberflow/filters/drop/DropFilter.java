@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 @Plugin(dslName = "drop", configParser = DropConfigParser.class)
-public class DropFilter extends Filter<DropConfig> {
+public class DropFilter implements Filter<DropConfig> {
   @Override
-  protected LogLine apply(LogLine logLine, DropConfig config) {
+  public LogLine apply(LogLine logLine, DropConfig config) {
     dropFields(logLine.getFields(), config.getFields());
     return logLine;
   }

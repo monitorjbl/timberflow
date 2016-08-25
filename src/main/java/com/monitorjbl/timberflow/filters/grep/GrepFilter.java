@@ -7,10 +7,9 @@ import com.monitorjbl.timberflow.plugin.Plugin;
 import java.util.regex.Matcher;
 
 @Plugin(dslName = "grep", configParser = GrepConfigParser.class)
-public class GrepFilter extends Filter<GrepConfig> {
-
+public class GrepFilter implements Filter<GrepConfig> {
   @Override
-  protected LogLine apply(LogLine logLine, GrepConfig config) {
+  public LogLine apply(LogLine logLine, GrepConfig config) {
     config.getMatches().forEach(m -> {
       if(logLine.getFields().containsKey(m.getField())) {
         Matcher matcher = m.getRegex().matcher(logLine.getField(m.getField()));

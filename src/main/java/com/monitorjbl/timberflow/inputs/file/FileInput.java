@@ -1,6 +1,7 @@
 package com.monitorjbl.timberflow.inputs.file;
 
 import com.monitorjbl.timberflow.inputs.Input;
+import com.monitorjbl.timberflow.inputs.MessageSender;
 import com.monitorjbl.timberflow.plugin.Plugin;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -8,7 +9,7 @@ import org.apache.commons.io.input.TailerListenerAdapter;
 import java.io.File;
 
 @Plugin(dslName = "file", configParser = FileConfigParser.class)
-public class FileInput extends Input {
+public class FileInput implements Input {
   private final String path;
   private final boolean fromBeginning;
   private Tailer tailer;
@@ -24,10 +25,10 @@ public class FileInput extends Input {
   }
 
   @Override
-  protected void start() {
+  public void start(MessageSender sender) {
     tailer = Tailer.create(new File(path), new TailerListenerAdapter() {
       public void handle(String line) {
-        sendMessage(line);
+        sender.sendMessage(line);
       }
     }, 1, !fromBeginning);
   }

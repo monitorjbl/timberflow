@@ -1,13 +1,15 @@
 package com.monitorjbl.timberflow.domain;
 
-public class SingleStep<T> implements Step {
+import com.monitorjbl.timberflow.config.Config;
+
+public class SingleStep implements Step {
   private Integer number;
   private String name;
-  private T config;
+  private Config config;
 
   public SingleStep() { }
 
-  public SingleStep(Integer number, String name, T config) {
+  public SingleStep(Integer number, String name, Config config) {
     this.number = number;
     this.name = name;
     this.config = config;
@@ -21,7 +23,7 @@ public class SingleStep<T> implements Step {
     return name;
   }
 
-  public T getConfig() {
+  public Config getConfig() {
     return config;
   }
 }

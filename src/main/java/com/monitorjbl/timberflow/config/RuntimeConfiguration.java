@@ -15,12 +15,12 @@ public class RuntimeConfiguration {
     RuntimeConfiguration.steps = steps;
   }
 
-  public static <E> SingleStep<E> step(Integer index) {
-    return (SingleStep<E>) steps.get(index);
+  public static SingleStep step(Integer index) {
+    return (SingleStep) steps.get(index);
   }
 
-  public static <E> SingleStep<E> step(LogLine logLine) {
-    return (SingleStep<E>) steps.get(logLine.getCurrentStep());
+  public static SingleStep step(LogLine logLine) {
+    return (SingleStep) steps.get(logLine.getCurrentStep());
   }
 
   public static SingleStep nextStep(LogLine logLine) {

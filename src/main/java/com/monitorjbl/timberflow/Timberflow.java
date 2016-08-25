@@ -7,6 +7,9 @@ import com.monitorjbl.timberflow.dsl.CompilationContext;
 import com.monitorjbl.timberflow.dsl.DSL;
 import com.monitorjbl.timberflow.dsl.DSLPlugin;
 import com.monitorjbl.timberflow.dsl.TimberflowCompiler;
+import com.monitorjbl.timberflow.filters.FilterActor;
+import com.monitorjbl.timberflow.inputs.InputActor;
+import com.monitorjbl.timberflow.outputs.OutputActor;
 import com.monitorjbl.timberflow.plugin.Plugin;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -48,9 +51,9 @@ public class Timberflow {
     }
   }
 
-  private void startActor(ActorSystem system, DSLPlugin plugin) {
+  private void startActor(ActorSystem system, Class baseActor, DSLPlugin plugin) {
     List<Object> props = plugin.getConfig().getConstructorArgs();
-    system.actorOf(Props.create(plugin.getCls(), props.toArray(new Object[props.size()])), plugin.getName());
+    system.actorOf(Props.create(baseActor, plugin.getCls(), props.toArray(new Object[props.size()])), plugin.getName());
   }
 
   static String readFile(String path) {
@@ -70,13 +73,13 @@ public class Timberflow {
 
     log.debug("Starting filter actors");
     ActorSystem system = ActorSystem.create("timberflow");
-    dsl.filterPlugins().forEach(filter -> startActor(system, filter));
+    dsl.filterPlugins().forEach(filter -> startActor(system, FilterActor.class, filter));
 
     log.debug("Starting output actors");
-    dsl.outputPlugins().forEach(output -> startActor(system, output));
+    dsl.outputPlugins().forEach(output -> startActor(system, OutputActor.class, output));
 
     log.debug("Starting input actors");
-    dsl.inputPlugins().forEach(input -> startActor(system, input));
+    dsl.inputPlugins().forEach(input -> startActor(system, InputActor.class, input));
 
     System.out.println(String.format("%sStarted up in%s %dms", ANSI_GREEN, ANSI_RESET, (System.currentTimeMillis() - start)));
   }
