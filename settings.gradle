@@ -2,3 +2,5 @@ rootProject.name = 'timberflow'
 include 'api'
 include 'core'
 include 'plugins'
+include 'tests'
+
