@@ -1,8 +1,9 @@
-package com.monitorjbl.timberflow.plugins.stdout;
+package com.monitorjbl.timberflow.plugins.output.stdout;
 
 import com.monitorjbl.timberflow.api.LogLine;
 import com.monitorjbl.timberflow.api.Output;
 import com.monitorjbl.timberflow.api.Plugin;
+import com.monitorjbl.timberflow.plugins.serializers.JsonSerializer;
 
 import java.util.Map;
 

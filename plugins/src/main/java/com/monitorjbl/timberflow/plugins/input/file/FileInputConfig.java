@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.plugins.file;
+package com.monitorjbl.timberflow.plugins.input.file;
 
 import com.monitorjbl.timberflow.api.Config;
 
@@ -8,12 +8,12 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 
-public class FileConfig implements Config {
+public class FileInputConfig implements Config {
   private String path;
   private boolean fromBeginning;
   private Map<String, String> addFields = new HashMap<>();
 
-  public FileConfig(String path, boolean fromBeginning, Map<String, String> addFields) {
+  public FileInputConfig(String path, boolean fromBeginning, Map<String, String> addFields) {
     this.path = path;
     this.fromBeginning = fromBeginning;
     this.addFields = addFields;

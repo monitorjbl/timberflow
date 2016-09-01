@@ -42,33 +42,33 @@ public class TimberflowCompiler {
     dsl.inputPlugins().forEach(p -> handleInputPlugin(inputCounter.incrementAndGet(), p));
 
     AtomicInteger programCounter = new AtomicInteger();
-    dsl.getFilters().forEach(s -> handleStatement(steps, programCounter, s));
-    dsl.getOutputs().forEach(s -> handleStatement(steps, programCounter, s));
+    dsl.getFilters().forEach(s -> handleStatement("filter", steps, programCounter, s));
+    dsl.getOutputs().forEach(s -> handleStatement("output", steps, programCounter, s));
     return steps;
   }
 
   private void handleInputPlugin(Integer counter, DSLPlugin plugin) {
-    plugin.setConfig(ctx.generatePluginConfig(plugin.getName(), plugin));
-    plugin.setName(plugin.getName() + "-" + counter);
+    plugin.setConfig(ctx.generatePluginConfig("input", plugin.getName(), plugin));
+    plugin.setName("input-" + plugin.getName() + "-" + counter);
   }
 
-  private void handleStatement(List<Step> steps, AtomicInteger programCounter, DSLBlockStatement statement) {
+  private void handleStatement(String block, List<Step> steps, AtomicInteger programCounter, DSLBlockStatement statement) {
     Integer pc = programCounter.getAndIncrement();
     if(statement instanceof DSLPlugin) {
-      handlePlugin(steps, pc, (DSLPlugin) statement);
+      handlePlugin(block, steps, pc, (DSLPlugin) statement);
     } else if(statement instanceof DSLBranch) {
       DSLBranch branch = ((DSLBranch) statement);
       steps.add(new ConditionalStep(pc, branch.getComparison(), pc + branch.getPlugins().size()));
-      branch.getPlugins().forEach(p -> handlePlugin(steps, programCounter.getAndIncrement(), p));
+      branch.getPlugins().forEach(p -> handlePlugin(block, steps, programCounter.getAndIncrement(), p));
     }
   }
 
   @SuppressWarnings("unchecked")
-  private void handlePlugin(List<Step> steps, Integer pc, DSLPlugin plugin) {
-    Config config = ctx.generatePluginConfig(plugin.getName(), plugin);
-    steps.add(new SingleStep(pc, plugin.getName() + "-" + pc, config));
+  private void handlePlugin(String block, List<Step> steps, Integer pc, DSLPlugin plugin) {
+    Config config = ctx.generatePluginConfig(block, plugin.getName(), plugin);
+    steps.add(new SingleStep(pc, block + "-" + plugin.getName() + "-" + pc, config));
     plugin.setConfig(config);
-    plugin.setName(plugin.getName() + "-" + pc);
+    plugin.setName(block + "-" + plugin.getName() + "-" + pc);
   }
 
 }

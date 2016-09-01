@@ -1,9 +1,9 @@
-package com.monitorjbl.timberflow.plugins.grep;
+package com.monitorjbl.timberflow.plugins.filter.grep;
 
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.PluginContent;
 import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
-import com.monitorjbl.timberflow.plugins.grep.GrepConfig.Match;
+import com.monitorjbl.timberflow.plugins.filter.grep.GrepConfig.Match;
 
 import java.util.ArrayList;
 import java.util.HashMap;

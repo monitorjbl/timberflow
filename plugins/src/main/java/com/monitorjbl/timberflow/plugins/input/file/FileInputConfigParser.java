@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.plugins.file;
+package com.monitorjbl.timberflow.plugins.input.file;
 
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.PluginContent;
@@ -9,9 +9,9 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
 
-public class FileConfigParser implements ConfigParser<FileConfig> {
+public class FileInputConfigParser implements ConfigParser<FileInputConfig> {
   @Override
-  public FileConfig generateConfig(PluginContent dslPlugin) {
+  public FileInputConfig generateConfig(PluginContent dslPlugin) {
     Map<String, String> addFields = null;
     if(dslPlugin.getMultiProperties().containsKey("add_fields")) {
       addFields = dslPlugin.getMultiProperties().get("add_fields").stream().collect(toMap(KeyValue::getKey, KeyValue::getValue));
@@ -30,6 +30,6 @@ public class FileConfigParser implements ConfigParser<FileConfig> {
       fromBeginning = (boolean) dslPlugin.getSingleProperties().get("from_beginning");
     }
 
-    return new FileConfig(path, fromBeginning, addFields);
+    return new FileInputConfig(path, fromBeginning, addFields);
   }
 }

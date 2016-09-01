@@ -20,6 +20,7 @@ public class ASTWalker extends TimberflowBaseListener {
   private final CompilationContext compilationCtx;
 
   private DSL dsl = new DSL();
+  private String currentBlockName;
   private List<DSLBlockStatement> currentBlock;
   private DSLPlugin currentPlugin;
   private DSLBranch currentBranch;
@@ -30,7 +31,7 @@ public class ASTWalker extends TimberflowBaseListener {
 
   @Override
   public void enterInputBlock(TimberflowParser.InputBlockContext ctx) {
-    setCurrentBlock("inputs");
+    setCurrentBlock("input");
   }
 
   @Override
@@ -40,7 +41,7 @@ public class ASTWalker extends TimberflowBaseListener {
 
   @Override
   public void enterFilterBlock(TimberflowParser.FilterBlockContext ctx) {
-    setCurrentBlock("filters");
+    setCurrentBlock("filter");
   }
 
   @Override
@@ -50,7 +51,7 @@ public class ASTWalker extends TimberflowBaseListener {
 
   @Override
   public void enterOutputBlock(TimberflowParser.OutputBlockContext ctx) {
-    setCurrentBlock("outputs");
+    setCurrentBlock("output");
   }
 
   @Override
@@ -77,7 +78,7 @@ public class ASTWalker extends TimberflowBaseListener {
 
   @Override
   public void exitPlugin(TimberflowParser.PluginContext ctx) {
-    if(currentBranch != null){
+    if(currentBranch != null) {
       currentBranch.getPlugins().add(currentPlugin);
     } else {
       currentBlock.add(currentPlugin);
@@ -108,13 +109,14 @@ public class ASTWalker extends TimberflowBaseListener {
 
   private void setCurrentBlock(String name) {
     log.trace("Starting parse of block {}", name);
+    currentBlockName = name;
     currentBlock = new ArrayList<>();
   }
 
   private void setCurrentPlugin(TimberflowParser.PluginContext ctx) {
     String name = ctx.Identifier().getText();
     log.trace("Starting parse of plugin {}", name);
-    currentPlugin = new DSLPlugin(name, compilationCtx.getPluginClass(name));
+    currentPlugin = new DSLPlugin(name, compilationCtx.getPluginClass(currentBlockName, name));
   }
 
   private String stripStringLiteral(TerminalNode node) {

@@ -1,4 +1,4 @@
-package com.monitorjbl.timberflow.plugins.file;
+package com.monitorjbl.timberflow.plugins.input.file;
 
 import com.monitorjbl.timberflow.api.Input;
 import com.monitorjbl.timberflow.api.MessageSender;
@@ -8,7 +8,7 @@ import org.apache.commons.io.input.TailerListenerAdapter;
 
 import java.io.File;
 
-@Plugin(dslName = "file", configParser = FileConfigParser.class)
+@Plugin(dslName = "file", configParser = FileInputConfigParser.class)
 public class FileInput implements Input {
   private final String path;
   private final boolean fromBeginning;
