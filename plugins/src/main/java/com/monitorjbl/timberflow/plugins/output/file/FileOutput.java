@@ -27,8 +27,7 @@ public class FileOutput implements Output<FileOutputConfig> {
   @Override
   public void apply(LogLine logLine, FileOutputConfig config) {
     try {
-      output.write(serialize(config.getType(), logLine.getFields())+"\n");
-      output.flush();
+      output.write(serialize(config.getType(), logLine.getFields()) + "\n");
     } catch(IOException e) {
       e.printStackTrace();
     }

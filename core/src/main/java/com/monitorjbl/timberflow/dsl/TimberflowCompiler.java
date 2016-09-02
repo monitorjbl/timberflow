@@ -66,7 +66,7 @@ public class TimberflowCompiler {
   @SuppressWarnings("unchecked")
   private void handlePlugin(String block, List<Step> steps, Integer pc, DSLPlugin plugin) {
     Config config = ctx.generatePluginConfig(block, plugin.getName(), plugin);
-    steps.add(new SingleStep(pc, block + "-" + plugin.getName() + "-" + pc, config));
+    steps.add(new SingleStep(pc, plugin.getCls(), block + "-" + plugin.getName() + "-" + pc, config));
     plugin.setConfig(config);
     plugin.setName(block + "-" + plugin.getName() + "-" + pc);
   }

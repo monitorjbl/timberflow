@@ -7,13 +7,20 @@ import java.util.regex.Pattern;
 
 public class GrepConfig implements Config {
   private final List<Match> matches;
+  private final int instances;
 
-  public GrepConfig(List<Match> matches) {
+  public GrepConfig(List<Match> matches, int instances) {
     this.matches = matches;
+    this.instances = instances;
   }
 
   public List<Match> getMatches() {
     return matches;
+  }
+
+  @Override
+  public int getInstances(){
+    return instances;
   }
 
   public static class Match {

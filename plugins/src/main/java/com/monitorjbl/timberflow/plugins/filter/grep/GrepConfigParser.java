@@ -42,7 +42,9 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
     if(kvList != null) {
       kvList.forEach(m -> matches.add(generateMatch(m.getKey(), m.getValue())));
     }
-    return new GrepConfig(matches);
+
+    Integer instances = (Integer) dslPlugin.getSingleProperties().get("instances");
+    return new GrepConfig(matches, instances == null ? 1 : instances);
   }
 
   public Match generateMatch(String field, String pattern) {

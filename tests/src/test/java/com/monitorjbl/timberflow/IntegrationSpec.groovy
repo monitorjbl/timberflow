@@ -41,7 +41,7 @@ class IntegrationSpec extends Specification {
     def randomIndex = { arr -> arr[randomInt(0, arr.size() - 1)] }
     def randomWord = { RandomStringUtils.randomAlphabetic(randomInt(4, 12)) }
     def index = 0
-    return (0..100000).collect {
+    return (0..1000000).collect {
       template.replaceAll('#TIMESTAMP#', generateDate())
           .replaceAll('#DURATION#', index++ as String)
           .replaceAll('#TYPE#', 'REQUEST')

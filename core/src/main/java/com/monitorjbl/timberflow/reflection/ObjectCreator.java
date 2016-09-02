@@ -12,7 +12,7 @@ public class ObjectCreator {
       c = findConstructor(cls, args);
       return (E) c.newInstance(args);
     } catch(Exception e) {
-      throw new ConstructorInstantiationException(e);
+      throw new ConstructorInstantiationException("Could not instantiate " + cls.getCanonicalName(), e);
     }
   }
 
