@@ -30,7 +30,7 @@ plugin
   ;
 
 branch
-  : If BraceOpen condition BraceClose BlockOpen plugin* BlockClose
+  : If ParenOpen condition ParenClose BlockOpen plugin* BlockClose
   ;
 
 condition
@@ -41,7 +41,7 @@ configuration
   : Identifier Equals BooleanLiteral
   | Identifier Equals IntegerLiteral
   | Identifier Equals StringLiteral
-  | Identifier map
+  | Identifier ParenOpen map ParenClose
   ;
 
 map
@@ -77,6 +77,10 @@ BraceOpen
   : Newline* '[' Newline*;
 BraceClose
   : Newline* ']' Newline*;
+ParenOpen
+  : Newline* '(' Newline*;
+ParenClose
+  : Newline* ')' Newline*;
 Comma
   : ',' Newline*;
 Dot
