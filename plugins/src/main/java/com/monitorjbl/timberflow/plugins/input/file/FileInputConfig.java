@@ -11,12 +11,11 @@ import static java.util.Arrays.asList;
 public class FileInputConfig implements Config {
   private String path;
   private boolean fromBeginning;
-  private Map<String, String> addFields = new HashMap<>();
+  private Map<String, String> addedFields = new HashMap<>();
 
-  public FileInputConfig(String path, boolean fromBeginning, Map<String, String> addFields) {
+  public FileInputConfig(String path, boolean fromBeginning) {
     this.path = path;
     this.fromBeginning = fromBeginning;
-    this.addFields = addFields;
   }
 
   public boolean isFromBeginning() {
@@ -27,8 +26,14 @@ public class FileInputConfig implements Config {
     return path;
   }
 
-  public Map<String, String> getAddFields() {
-    return addFields;
+  @Override
+  public Map<String, String> getAddedFields() {
+    return addedFields;
+  }
+
+  @Override
+  public void setAddedFields(Map<String, String> addedFields) {
+    this.addedFields = addedFields;
   }
 
   @Override

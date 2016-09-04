@@ -76,13 +76,9 @@ public class Timberflow {
   }
 
   private void addPlugin(CompilationContext ctx, Class t) {
-    try {
-      Plugin plugin = (Plugin) t.getAnnotation(Plugin.class);
-      ctx.addEntry(plugin.dslName(), t, plugin.configParser().newInstance());
-      pluginInfo.put(t, plugin);
-    } catch(InstantiationException | IllegalAccessException e) {
-      throw new IllegalArgumentException("Could not start plugin " + t, e);
-    }
+    Plugin plugin = (Plugin) t.getAnnotation(Plugin.class);
+    ctx.addEntry(plugin.dslName(), t, plugin.configParser());
+    pluginInfo.put(t, plugin);
   }
 
   private void startActor(ActorSystem system, Class baseActor, DSLPlugin plugin) {

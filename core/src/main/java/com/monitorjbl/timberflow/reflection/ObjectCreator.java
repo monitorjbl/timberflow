@@ -6,6 +6,10 @@ import java.util.Arrays;
 import static java.util.stream.Collectors.joining;
 
 public class ObjectCreator {
+  public static <E> E newInstance(Class<E> cls) {
+    return newInstance(cls, new Object[0]);
+  }
+
   public static <E> E newInstance(Class<E> cls, Object[] args) {
     Constructor c = null;
     try {

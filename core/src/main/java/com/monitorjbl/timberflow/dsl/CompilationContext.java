@@ -5,14 +5,19 @@ import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.Filter;
 import com.monitorjbl.timberflow.api.Input;
 import com.monitorjbl.timberflow.api.Output;
+import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
+import com.monitorjbl.timberflow.reflection.ObjectCreator;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
 public class CompilationContext {
@@ -20,7 +25,7 @@ public class CompilationContext {
   private Map<String, Map<String, Class>> plugins = new HashMap<>();
   private Map<String, Map<String, ConfigParser>> configGenerators = new HashMap<>();
 
-  public void addEntry(String name, Class actor, ConfigParser configParser) {
+  public void addEntry(String name, Class actor, Class<? extends ConfigParser> configParser) {
     getSupportedBlockNames(actor).forEach(block -> {
       if(!plugins.containsKey(block)) {
         plugins.put(block, new HashMap<>());
@@ -30,7 +35,7 @@ public class CompilationContext {
       if(!configGenerators.containsKey(block)) {
         configGenerators.put(block, new HashMap<>());
       }
-      configGenerators.get(block).put(name, configParser);
+      configGenerators.get(block).put(name, ObjectCreator.newInstance(configParser));
     });
   }
 
@@ -43,10 +48,23 @@ public class CompilationContext {
     assertExists(block, name);
     ConfigParser generator = configGenerators.get(block).get(name);
     if(generator != null) {
-      return generator.generateConfig(plugin);
+      return setCommonFields(plugin, generator.generateConfig(plugin));
     } else {
       return null;
     }
+  }
+
+  private Config setCommonFields(DSLPlugin plugin, Config config) {
+    Integer instances = (Integer) plugin.getSingleProperties().get("instances");
+    config.setInstances(instances == null ? 0 : instances);
+
+    List<KeyValue> addedFields = plugin.getMultiProperties().get("add_fields");
+    if(addedFields != null) {
+      config.setAddedFields(addedFields.stream()
+          .filter(distinctByKey())
+          .collect(toMap(KeyValue::getKey, KeyValue::getValue)));
+    }
+    return config;
   }
 
   private void assertExists(String block, String name) {
@@ -72,6 +90,11 @@ public class CompilationContext {
       throw new IllegalArgumentException("Class " + cls.getCanonicalName() + " does not implement any supported interfaces " + "(expected one of " +
           Input.class.getCanonicalName() + "," + Filter.class.getCanonicalName() + ", or " + Output.class.getCanonicalName() + ")");
     }
+  }
+
+  public static Predicate<KeyValue> distinctByKey() {
+    Map<String, Boolean> found = new HashMap<>();
+    return t -> found.putIfAbsent(t.getKey(), Boolean.TRUE) == null;
   }
 
   public static class PluginNotFoundException extends RuntimeException {
