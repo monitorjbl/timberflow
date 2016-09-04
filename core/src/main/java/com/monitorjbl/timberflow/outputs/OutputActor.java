@@ -26,7 +26,7 @@ public class OutputActor extends UntypedActor {
       while(true) {
         sleep(1000);
         long throughput = ((messages - lastCheck) / (System.currentTimeMillis() - lastCheckTime));
-        monitor.tell(new StatsMessage("input", outputClass.getSimpleName(), throughput), self());
+        monitor.tell(new StatsMessage("output", self().path().name(), throughput), self());
         lastCheckTime = System.currentTimeMillis();
         lastCheck = messages;
       }

@@ -52,7 +52,6 @@ public class Timberflow {
   @Option(name = "--plugins", usage = "Path to the plugins directory (defaults to ${TIMBERFLOW_HOME}/plugins)")
   private File pluginsDir = new File(classLocation() + "/../plugins");
 
-  private Map<Class, Plugin> pluginInfo = new HashMap<>();
   private Map<Class, List<ActorRef>> actors = new HashMap<>();
   private Map<Class, ActorRef> routers = new HashMap<>();
 
@@ -78,7 +77,6 @@ public class Timberflow {
   private void addPlugin(CompilationContext ctx, Class t) {
     Plugin plugin = (Plugin) t.getAnnotation(Plugin.class);
     ctx.addEntry(plugin.dslName(), t, plugin.configParser());
-    pluginInfo.put(t, plugin);
   }
 
   private void startActor(ActorSystem system, Class baseActor, DSLPlugin plugin) {
@@ -86,11 +84,17 @@ public class Timberflow {
     if(!actors.containsKey(plugin.getCls())) {
       actors.put(plugin.getCls(), new ArrayList<>());
     }
-    for(int i = 0; i < plugin.getConfig().getInstances(); i++) {
-      String suffix = i > 0 ? "-" + i : "";
+
+    if(plugin.getConfig().getInstances() == 1) {
       actors.get(plugin.getCls()).add(system.actorOf(
           Props.create(baseActor, plugin.getCls(), props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox"),
-          plugin.getName() + suffix));
+          plugin.getName()));
+    } else {
+      for(int i = 0; i < plugin.getConfig().getInstances(); i++) {
+        actors.get(plugin.getCls()).add(system.actorOf(
+            Props.create(baseActor, plugin.getCls(), props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox"),
+            plugin.getName() + "-" + i));
+      }
     }
   }
 

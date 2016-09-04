@@ -30,7 +30,7 @@ public class FilterActor extends UntypedActor {
       while(true) {
         sleep(1000);
         throughput = ((messages - lastCheck) / (System.currentTimeMillis() - lastCheckTime));
-        monitor.tell(new StatsMessage("input", self().path().name(), throughput), self());
+        monitor.tell(new StatsMessage("filter", self().path().name(), throughput), self());
         lastCheckTime = System.currentTimeMillis();
         lastCheck = messages;
       }

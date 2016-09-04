@@ -23,7 +23,7 @@ public class MonitorActor extends UntypedActor {
     this.reporter = new Thread(() -> {
       while(running) {
         String report = throughput.entrySet().stream()
-            .map(e -> String.format("%-20s: %s/ms", e.getKey(), e.getValue()))
+            .map(e -> String.format("%-25s: %s/ms", e.getKey(), e.getValue()))
             .collect(joining("\n"));
         log.debug("Throughput Report\n{}\n{}\n{}", border, report, border);
         sleep(1000);
@@ -36,7 +36,7 @@ public class MonitorActor extends UntypedActor {
   public void onReceive(Object message) throws Throwable {
     if(message instanceof StatsMessage) {
       StatsMessage stats = (StatsMessage) message;
-      throughput.put(stats.getType() + "-" + stats.getPluginName(), stats.getMessagesPerMillisecond());
+      throughput.put(stats.getPluginName(), stats.getMessagesPerMillisecond());
     } else {
       unhandled(message);
     }
