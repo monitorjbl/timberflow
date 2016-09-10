@@ -39,4 +39,5 @@ public class ConditionalStep implements Step {
       throw new IllegalArgumentException("Cannot handle comparison " + comparison.getCompareOperation());
     }
   }
+
 }

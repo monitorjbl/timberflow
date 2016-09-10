@@ -39,6 +39,7 @@ import java.util.Map;
 
 import static com.monitorjbl.timberflow.utils.ThreadUtils.sleep;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -113,6 +114,8 @@ public class Timberflow {
     long start = System.currentTimeMillis();
     DSL dsl = compile(readFile(configFile.getAbsolutePath()), loadPlugins());
     RuntimeConfiguration.applyConfig(dsl.getSteps());
+    log.debug("Using the following config:\n\nInputs:\n{}\n\nFlow:\n{}",
+        dsl.inputPlugins().stream().map(p -> "  " + p.getCls().getSimpleName()).collect(joining("\n")), RuntimeConfiguration.printout());
 
     log.debug("Starting monitor actor");
     ActorSystem system = ActorSystem.create("timberflow");

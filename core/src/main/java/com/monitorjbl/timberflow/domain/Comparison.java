@@ -8,7 +8,17 @@ public class Comparison {
   private Comparison nextComparison;
 
   public enum CompareOperation {
-    EQUALS, NOT_EQUALS;
+    EQUALS("=="), NOT_EQUALS("!=");
+
+    String str;
+
+    CompareOperation(String str) {
+      this.str = str;
+    }
+
+    public String toString() {
+      return str;
+    }
 
     public static CompareOperation fromString(String str) {
       if("==".equals(str)) {
@@ -67,5 +77,10 @@ public class Comparison {
 
   void setNextComparison(Comparison nextComparison) {
     this.nextComparison = nextComparison;
+  }
+
+  @Override
+  public String toString() {
+    return leftHand + " " + compareOperation.toString() + " " + rightHand;
   }
 }

@@ -15,6 +15,25 @@ public class RuntimeConfiguration {
     RuntimeConfiguration.steps = steps;
   }
 
+  public static String printout() {
+    StringBuilder sb = new StringBuilder();
+    int conditional = -1;
+    for(int i = 0; i < steps.size(); i++) {
+      Step step = steps.get(i);
+      if(step instanceof SingleStep) {
+        if(i < conditional) {
+          sb.append(String.format("  %d:   %s\n", i, ((SingleStep) step).getCls().getSimpleName()));
+        } else {
+          sb.append(String.format("  %d: %s\n", i, ((SingleStep) step).getCls().getSimpleName()));
+        }
+      } else if(step instanceof ConditionalStep) {
+        sb.append(String.format("  %d: if %s\n", i, ((ConditionalStep) step).getComparison()));
+        conditional = i + ((ConditionalStep) step).getJump();
+      }
+    }
+    return sb.toString();
+  }
+
   public static SingleStep step(Integer index) {
     if(index >= steps.size()) {
       return null;
@@ -24,7 +43,7 @@ public class RuntimeConfiguration {
   }
 
   public static SingleStep step(LogLine logLine) {
-    return (SingleStep) steps.get(logLine.getCurrentStep());
+    return step(logLine.getCurrentStep());
   }
 
   public static SingleStep nextStep(LogLine logLine) {
