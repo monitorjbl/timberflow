@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.routing.RoundRobinGroup;
 import com.monitorjbl.timberflow.api.Plugin;
-import com.monitorjbl.timberflow.config.RuntimeConfiguration;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.dsl.CompilationContext;
 import com.monitorjbl.timberflow.dsl.CompilationContext.PluginNotFoundException;

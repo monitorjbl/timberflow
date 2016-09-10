@@ -4,7 +4,7 @@ import akka.actor.ActorSelection;
 import com.monitorjbl.timberflow.BaseActor;
 import com.monitorjbl.timberflow.api.Filter;
 import com.monitorjbl.timberflow.api.LogLine;
-import com.monitorjbl.timberflow.config.RuntimeConfiguration;
+import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.LogLineImpl;
 import com.monitorjbl.timberflow.domain.SingleStep;
@@ -27,11 +27,13 @@ public class FilterActor extends BaseActor {
       SingleStep current = RuntimeConfiguration.step(logLine);
 
       logLine = filter.apply(logLine, current.getConfig());
-      handleMessage(logLine);
+      handleMessage(logLine.getFields());
 
       SingleStep next = RuntimeConfiguration.nextStep(logLine);
-      ActorSelection nextActor = context().actorSelection("../" + next.getName());
-      nextActor.tell(new LogLineImpl(next.getNumber(), logLine.getFields()), self());
+      if(next != null) {
+        ActorSelection nextActor = context().actorSelection("../" + next.getName());
+        nextActor.tell(new LogLineImpl(next.getNumber(), logLine.getFields()), self());
+      }
     } else {
       unhandled(message);
     }

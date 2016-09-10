@@ -6,22 +6,22 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class GrepConfig implements Config {
-  private final List<Match> matches;
+  private final List<Extract> extracts;
 
-  public GrepConfig(List<Match> matches) {
-    this.matches = matches;
+  public GrepConfig(List<Extract> extracts) {
+    this.extracts = extracts;
   }
 
-  public List<Match> getMatches() {
-    return matches;
+  public List<Extract> getExtracts() {
+    return extracts;
   }
 
-  public static class Match {
+  public static class Extract {
     private final String field;
     private final Pattern regex;
     private final List<String> fields;
 
-    public Match(String field, Pattern regex, List<String> fields) {
+    public Extract(String field, Pattern regex, List<String> fields) {
       this.field = field;
       this.regex = regex;
       this.fields = fields;

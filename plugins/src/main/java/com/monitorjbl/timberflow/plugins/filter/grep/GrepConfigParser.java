@@ -3,7 +3,7 @@ package com.monitorjbl.timberflow.plugins.filter.grep;
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.PluginContent;
 import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
-import com.monitorjbl.timberflow.plugins.filter.grep.GrepConfig.Match;
+import com.monitorjbl.timberflow.plugins.filter.grep.GrepConfig.Extract;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,16 +37,16 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
 
   @Override
   public GrepConfig generateConfig(PluginContent dslPlugin) {
-    List<Match> matches = new ArrayList<>();
+    List<Extract> extracts = new ArrayList<>();
     List<KeyValue> kvList = dslPlugin.getMultiProperties().get("match");
     if(kvList != null) {
-      kvList.forEach(m -> matches.add(generateMatch(m.getKey(), m.getValue())));
+      kvList.forEach(m -> extracts.add(generateMatch(m.getKey(), m.getValue())));
     }
 
-    return new GrepConfig(matches);
+    return new GrepConfig(extracts);
   }
 
-  public Match generateMatch(String field, String pattern) {
+  public Extract generateMatch(String field, String pattern) {
     String replaced = pattern;
 
     //replace all underscored named groups
@@ -69,6 +69,6 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
       }
     }
 
-    return new Match(field, Pattern.compile(replaced), fields);
+    return new Extract(field, Pattern.compile(replaced), fields);
   }
 }

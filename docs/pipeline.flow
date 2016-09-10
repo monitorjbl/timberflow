@@ -9,19 +9,23 @@ inputs {
 
 filters {
   grep {
-    instances = 2
-    match({"message": "%{DATA:timestamp_local}\|%{NUMBER:duration}\|%{WORD:request_type}\|%{IP:clientip}\|%{DATA:username}\|%{WORD:method}\|%{PATH:resource}\|%{DATA:protocol}\|%{NUMBER:statuscode}\|%{NUMBER:bytes}"})
-    match({"resource": "/%{DATA:repo}/%{GREEDYDATA:resource_path}"})
-    match({"resource_path": "(?<resource_name>[^/]+$)"})
+    instances = 1
+    extract({"message": "%{DATA:timestamp_local}\|%{NUMBER:duration}\|%{WORD:request_type}\|%{IP:clientip}\|%{DATA:username}\|%{WORD:method}\|%{PATH:resource}\|%{DATA:protocol}\|%{NUMBER:statuscode}\|%{NUMBER:bytes}"})
+    extract({"resource": "/%{DATA:repo}/%{GREEDYDATA:resource_path}"})
+    extract({"resource_path": "(?<resource_name>[^/]+$)"})
+    add_fields({"grepped": "yep"})
   }
 
-  if(username == "admin") {
-    drop {
-      fields = "message"
-    }
-  }
+  //if(username == "admin") {
+  //  drop {
+  //    fields = "message"
+  //  }
+  //}
 }
 
 outputs {
   noop{}
+  //file{
+  //  path = "/tmp/output"
+  //}
 }

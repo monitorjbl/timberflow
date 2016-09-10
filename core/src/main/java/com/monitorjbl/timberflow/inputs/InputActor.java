@@ -3,9 +3,8 @@ package com.monitorjbl.timberflow.inputs;
 import akka.actor.ActorSelection;
 import com.monitorjbl.timberflow.BaseActor;
 import com.monitorjbl.timberflow.api.Input;
-import com.monitorjbl.timberflow.api.LogLine;
 import com.monitorjbl.timberflow.api.MessageSender;
-import com.monitorjbl.timberflow.config.RuntimeConfiguration;
+import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.LogLineImpl;
 import com.monitorjbl.timberflow.domain.SingleStep;
@@ -46,12 +45,13 @@ public class InputActor extends BaseActor {
       Map<String, String> fields = new TreeMap<>();
       fields.put("message", message);
       fields.put("@timestamp", ZonedDateTime.now(ZoneOffset.UTC).toString());
+      handleMessage(fields);
 
       SingleStep next = RuntimeConfiguration.step(0);
-      ActorSelection nextActor = context().actorSelection("../" + next.getCls().getCanonicalName());
-      LogLine logLine = new LogLineImpl(next.getNumber(), fields);
-      handleMessage(logLine);
-      nextActor.tell(logLine, self());
+      if(next != null) {
+        ActorSelection nextActor = context().actorSelection("../" + next.getCls().getCanonicalName());
+        nextActor.tell(new LogLineImpl(next.getNumber(), fields), self());
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 public class GrepFilter implements Filter<GrepConfig> {
   @Override
   public LogLine apply(LogLine logLine, GrepConfig config) {
-    config.getMatches().forEach(m -> {
+    config.getExtracts().forEach(m -> {
       if(logLine.getFields().containsKey(m.getField())) {
         Matcher matcher = m.getRegex().matcher(logLine.getField(m.getField()));
         if(matcher.matches()) {

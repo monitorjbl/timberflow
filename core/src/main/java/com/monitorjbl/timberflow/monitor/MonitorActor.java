@@ -21,6 +21,7 @@ public class MonitorActor extends UntypedActor {
   @Override
   public void preStart() {
     this.reporter = new Thread(() -> {
+      sleep(1000);
       while(running) {
         String report = throughput.entrySet().stream()
             .map(e -> String.format("%-25s: %s/ms", e.getKey(), e.getValue()))

@@ -2,9 +2,10 @@ package com.monitorjbl.timberflow;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import com.monitorjbl.timberflow.api.LogLine;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.monitor.StatsMessage;
+
+import java.util.Map;
 
 import static com.monitorjbl.timberflow.utils.ThreadUtils.sleep;
 
@@ -31,8 +32,8 @@ public abstract class BaseActor extends UntypedActor {
     this.throughputMonitor.start();
   }
 
-  protected void handleMessage(LogLine logLine) {
+  protected void handleMessage(Map<String, String> fields) {
     messages++;
-    config.getAddedFields().forEach((k, v) -> logLine.getFields().put(k, v));
+    config.getAddedFields().forEach(fields::put);
   }
 }
