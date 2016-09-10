@@ -1,6 +1,6 @@
 package com.monitorjbl.timberflow.dsl;
 
-import com.monitorjbl.timberflow.api.Config;
+import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.ConditionalStep;
 import com.monitorjbl.timberflow.domain.SingleStep;
 import com.monitorjbl.timberflow.domain.Step;
@@ -48,7 +48,7 @@ public class TimberflowCompiler {
   }
 
   private void handleInputPlugin(Integer counter, DSLPlugin plugin) {
-    plugin.setConfig(ctx.generatePluginConfig("input", plugin.getName(), plugin));
+    plugin.setActorConfig(ctx.generateActorConfig("input", plugin.getName(), plugin));
     plugin.setName("input-" + plugin.getName() + "-" + counter);
   }
 
@@ -65,9 +65,9 @@ public class TimberflowCompiler {
 
   @SuppressWarnings("unchecked")
   private void handlePlugin(String block, List<Step> steps, Integer pc, DSLPlugin plugin) {
-    Config config = ctx.generatePluginConfig(block, plugin.getName(), plugin);
-    steps.add(new SingleStep(pc, plugin.getCls(), block + "-" + plugin.getName() + "-" + pc, config));
-    plugin.setConfig(config);
+    ActorConfig config = ctx.generateActorConfig(block, plugin.getName(), plugin);
+    steps.add(new SingleStep(pc, plugin.getCls(), block + "-" + plugin.getName() + "-" + pc, config.getConfig()));
+    plugin.setActorConfig(config);
     plugin.setName(block + "-" + plugin.getName() + "-" + pc);
   }
 

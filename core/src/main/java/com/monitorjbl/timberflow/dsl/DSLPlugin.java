@@ -1,7 +1,7 @@
 package com.monitorjbl.timberflow.dsl;
 
-import com.monitorjbl.timberflow.api.Config;
 import com.monitorjbl.timberflow.api.PluginContent;
+import com.monitorjbl.timberflow.domain.ActorConfig;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +12,7 @@ public class DSLPlugin implements DSLBlockStatement, PluginContent {
   private final Map<String, List<KeyValue>> multiProperties = new HashMap<>();
   private final Map<String, Object> singleProperties = new HashMap<>();
   private String name;
-  private Config config;
+  private ActorConfig actorConfig;
 
   public DSLPlugin(String name, Class cls) {
     this.name = name;
@@ -39,11 +39,11 @@ public class DSLPlugin implements DSLBlockStatement, PluginContent {
     return singleProperties;
   }
 
-  public Config getConfig() {
-    return config;
+  public ActorConfig getActorConfig() {
+    return actorConfig;
   }
 
-  void setConfig(Config config) {
-    this.config = config;
+  void setActorConfig(ActorConfig actorConfig) {
+    this.actorConfig = actorConfig;
   }
 }

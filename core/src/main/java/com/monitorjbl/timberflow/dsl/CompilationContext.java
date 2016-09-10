@@ -1,11 +1,11 @@
 package com.monitorjbl.timberflow.dsl;
 
-import com.monitorjbl.timberflow.api.Config;
 import com.monitorjbl.timberflow.api.ConfigParser;
 import com.monitorjbl.timberflow.api.Filter;
 import com.monitorjbl.timberflow.api.Input;
 import com.monitorjbl.timberflow.api.Output;
 import com.monitorjbl.timberflow.api.PluginContent.KeyValue;
+import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.reflection.ObjectCreator;
 
 import java.util.HashMap;
@@ -44,27 +44,19 @@ public class CompilationContext {
     return plugins.get(block).get(name);
   }
 
-  public Config generatePluginConfig(String block, String name, DSLPlugin plugin) {
+  public ActorConfig generateActorConfig(String block, String name, DSLPlugin plugin) {
     assertExists(block, name);
     ConfigParser generator = configGenerators.get(block).get(name);
-    if(generator != null) {
-      return setCommonFields(plugin, generator.generateConfig(plugin));
-    } else {
-      return null;
-    }
-  }
-
-  private Config setCommonFields(DSLPlugin plugin, Config config) {
     Integer instances = (Integer) plugin.getSingleProperties().get("instances");
-    config.setInstances(instances == null ? 0 : instances);
-
     List<KeyValue> addedFields = plugin.getMultiProperties().get("add_fields");
+    Map<String, String> map = new HashMap<>();
+
     if(addedFields != null) {
-      config.setAddedFields(addedFields.stream()
+      map = addedFields.stream()
           .filter(distinctByKey())
-          .collect(toMap(KeyValue::getKey, KeyValue::getValue)));
+          .collect(toMap(KeyValue::getKey, KeyValue::getValue));
     }
-    return config;
+    return new ActorConfig(generator.generateConfig(plugin), instances == null ? 1 : instances, map);
   }
 
   private void assertExists(String block, String name) {

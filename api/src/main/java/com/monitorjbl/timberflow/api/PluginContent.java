@@ -12,8 +12,6 @@ public interface PluginContent {
 
   Map<String, Object> getSingleProperties();
 
-  Config getConfig();
-
   class KeyValue {
     private final String key;
     private final String value;

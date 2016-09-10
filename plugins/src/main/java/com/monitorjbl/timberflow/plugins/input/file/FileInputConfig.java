@@ -27,16 +27,6 @@ public class FileInputConfig implements Config {
   }
 
   @Override
-  public Map<String, String> getAddedFields() {
-    return addedFields;
-  }
-
-  @Override
-  public void setAddedFields(Map<String, String> addedFields) {
-    this.addedFields = addedFields;
-  }
-
-  @Override
   public List<Object> getConstructorArgs() {
     return asList(path, fromBeginning);
   }

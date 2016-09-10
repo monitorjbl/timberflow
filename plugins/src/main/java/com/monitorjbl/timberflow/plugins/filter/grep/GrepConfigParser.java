@@ -43,8 +43,7 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
       kvList.forEach(m -> matches.add(generateMatch(m.getKey(), m.getValue())));
     }
 
-    Integer instances = (Integer) dslPlugin.getSingleProperties().get("instances");
-    return new GrepConfig(matches, instances == null ? 1 : instances);
+    return new GrepConfig(matches);
   }
 
   public Match generateMatch(String field, String pattern) {

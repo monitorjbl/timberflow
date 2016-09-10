@@ -6,6 +6,7 @@ import akka.actor.Props;
 import akka.routing.RoundRobinGroup;
 import com.monitorjbl.timberflow.api.Plugin;
 import com.monitorjbl.timberflow.config.RuntimeConfiguration;
+import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.dsl.CompilationContext;
 import com.monitorjbl.timberflow.dsl.CompilationContext.PluginNotFoundException;
 import com.monitorjbl.timberflow.dsl.DSL;
@@ -80,22 +81,23 @@ public class Timberflow {
   }
 
   private void startActor(ActorSystem system, Class baseActor, DSLPlugin plugin) {
-    List<Object> props = plugin.getConfig().getConstructorArgs();
+    List<Object> props = plugin.getActorConfig().getConfig().getConstructorArgs();
     if(!actors.containsKey(plugin.getCls())) {
       actors.put(plugin.getCls(), new ArrayList<>());
     }
 
-    if(plugin.getConfig().getInstances() == 1) {
-      actors.get(plugin.getCls()).add(system.actorOf(
-          Props.create(baseActor, plugin.getCls(), props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox"),
-          plugin.getName()));
+    log.debug("Starting {} with {} instances", plugin.getCls(), plugin.getActorConfig().getInstances());
+    if(plugin.getActorConfig().getInstances() == 1) {
+      actors.get(plugin.getCls()).add(system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName()));
     } else {
-      for(int i = 0; i < plugin.getConfig().getInstances(); i++) {
-        actors.get(plugin.getCls()).add(system.actorOf(
-            Props.create(baseActor, plugin.getCls(), props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox"),
-            plugin.getName() + "-" + i));
+      for(int i = 0; i < plugin.getActorConfig().getInstances(); i++) {
+        actors.get(plugin.getCls()).add(system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName() + "-" + i));
       }
     }
+  }
+
+  private Props props(Class baseActor, Class pluginClass, ActorConfig config, List<Object> props) {
+    return Props.create(baseActor, pluginClass, config, props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox");
   }
 
   private List<PluginJar> loadPlugins() {
@@ -174,6 +176,10 @@ public class Timberflow {
       System.exit(1);
     } catch(PluginNotFoundException e) {
       System.err.println("Plugin not found: " + e.getName());
+      System.exit(1);
+    } catch(Exception e) {
+      System.err.println("Unexpected error");
+      e.printStackTrace();
       System.exit(1);
     }
 
