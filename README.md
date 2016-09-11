@@ -26,23 +26,31 @@ Configuration is done through a simple language:
 
 ```
 inputs {
-  stdin{}
+  stdin {}
   file {
     path = "/tmp/test1"
     from_beginning = true
-    add_fields {"site": "SJC", "env": "prod"}
+    add_fields({"site": "SJC", "env": "prod"})
   }
-  file {
-    path = "/tmp/test2"
-    add_fields {"site": "RTP", "env": "dev"}
+  kafka {
+    bootstrap_servers = "localhost:9092"
+    group_id = "timberflow"
+    topic = "test"
   }
 }
 
 filters {
   grep {
-    match {"message": "%{DATA:timestamp_local}\|%{NUMBER:duration}\|%{WORD:request_type}\|%{IP:clientip}\|%{DATA:username}\|%{WORD:method}\|%{PATH:resource}\|%{DATA:protocol}\|%{NUMBER:statuscode}\|%{NUMBER:bytes}"}
-    match {"resource": "/%{DATA:repo}/%{GREEDYDATA:resource_path}"}
-    match {"resource_path": "(?<resource_name>[^/]+$)"}
+    extract({"message": "%{DATA:timestamp_local}\|%{NUMBER:duration}\|%{WORD:request_type}\|%{IP:clientip}\|%{DATA:username}\|%{WORD:method}\|%{PATH:resource}\|%{DATA:protocol}\|%{NUMBER:statuscode}\|%{NUMBER:bytes}"})
+    extract({"resource": "/%{DATA:repo}/%{GREEDYDATA:resource_path}"})
+    extract({"resource_path": "(?<resource_name>[^/]+$)"})
+    add_fields({"grepped": "yep"})
+  }
+
+  if(username == "admin") {
+    drop {
+      fields = "username"
+    }
   }
 
   drop {
@@ -51,7 +59,10 @@ filters {
 }
 
 outputs {
-  stdout {}
+  noop{}
+  file{
+    path = "/tmp/output"
+  }
 }
 ```
 
