@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.monitorjbl.timberflow.utils.ThreadUtils.sleep;
 import static java.util.stream.Collectors.joining;
@@ -13,7 +14,7 @@ import static java.util.stream.Collectors.joining;
 public class MonitorActor extends UntypedActor {
   private static final Logger log = LoggerFactory.getLogger(MonitorActor.class);
 
-  private final Map<String, Long> throughput = new HashMap<>();
+  private final Map<String, Long> throughput = new ConcurrentHashMap<>();
   private final String border = "-------------------------------------------------";
   private Thread reporter;
   private boolean running = true;

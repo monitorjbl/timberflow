@@ -10,13 +10,11 @@ import java.io.File;
 
 @Plugin(dslName = "file", configParser = FileInputConfigParser.class)
 public class FileInput implements Input {
-  private final String path;
-  private final boolean fromBeginning;
+  private final FileInputConfig config;
   private Tailer tailer;
 
-  public FileInput(String path, boolean fromBeginning) {
-    this.path = path;
-    this.fromBeginning = fromBeginning;
+  public FileInput(FileInputConfig config) {
+    this.config = config;
   }
 
   @Override
@@ -26,10 +24,10 @@ public class FileInput implements Input {
 
   @Override
   public void start(MessageSender sender) {
-    tailer = Tailer.create(new File(path), new TailerListenerAdapter() {
+    tailer = Tailer.create(new File(config.getPath()), new TailerListenerAdapter() {
       public void handle(String line) {
         sender.sendMessage(line);
       }
-    }, 1, !fromBeginning);
+    }, 1, !config.isFromBeginning());
   }
 }

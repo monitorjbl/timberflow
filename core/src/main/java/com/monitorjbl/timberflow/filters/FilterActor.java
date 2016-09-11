@@ -2,21 +2,20 @@ package com.monitorjbl.timberflow.filters;
 
 import akka.actor.ActorSelection;
 import com.monitorjbl.timberflow.BaseActor;
+import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.api.Filter;
 import com.monitorjbl.timberflow.api.LogLine;
-import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.LogLineImpl;
 import com.monitorjbl.timberflow.domain.SingleStep;
-import com.monitorjbl.timberflow.reflection.ObjectCreator;
 
 public class FilterActor extends BaseActor {
 
   private final Filter filter;
 
-  public FilterActor(Class<? extends Filter> outputClass, ActorConfig config, Object... constructorArgs) {
+  public FilterActor(Class<? extends Filter> outputClass, ActorConfig config) {
     super(config);
-    this.filter = ObjectCreator.newInstance(outputClass, constructorArgs);
+    this.filter = instiatiatePlugin(outputClass, config);
   }
 
   @Override

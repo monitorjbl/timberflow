@@ -1,15 +1,19 @@
 inputs {
-  //stdin {}
-  file {
-    path = "/tmp/test1"
-    from_beginning = true
-    add_fields({"site": "SJC", "env": "prod"})
+  stdin {}
+  //file {
+  //  path = "/tmp/test1"
+  //  from_beginning = true
+  //  add_fields({"site": "SJC", "env": "prod"})
+  //}
+  kafka {
+    bootstrap_servers = "localhost:9092"
+    group_id = "timberflow"
+    topic = "test"
   }
 }
 
 filters {
   grep {
-    instances = 2
     extract({"message": "%{DATA:timestamp_local}\|%{NUMBER:duration}\|%{WORD:request_type}\|%{IP:clientip}\|%{DATA:username}\|%{WORD:method}\|%{PATH:resource}\|%{DATA:protocol}\|%{NUMBER:statuscode}\|%{NUMBER:bytes}"})
     extract({"resource": "/%{DATA:repo}/%{GREEDYDATA:resource_path}"})
     extract({"resource_path": "(?<resource_name>[^/]+$)"})
@@ -18,13 +22,17 @@ filters {
 
   if(username == "admin") {
     drop {
-      fields = "message"
+      fields = "username"
     }
+  }
+
+  drop {
+    fields = "message"
   }
 }
 
 outputs {
-  //noop{}
+  noop{}
   file{
     path = "/tmp/output"
   }

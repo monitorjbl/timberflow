@@ -8,7 +8,6 @@ import com.monitorjbl.timberflow.api.MessageSender;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.LogLineImpl;
 import com.monitorjbl.timberflow.domain.SingleStep;
-import com.monitorjbl.timberflow.reflection.ObjectCreator;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -21,9 +20,9 @@ public class InputActor extends BaseActor {
   private final String name;
   private final MessageSender messageSender;
 
-  public InputActor(Class<? extends Input> outputClass, ActorConfig config, Object... constructorArgs) {
+  public InputActor(Class<? extends Input> outputClass, ActorConfig config) {
     super(config);
-    this.input = ObjectCreator.newInstance(outputClass, constructorArgs);
+    this.input = instiatiatePlugin(outputClass, config);
     this.messageSender = new MessageSenderImpl();
     this.name = self().path().name();
   }
@@ -51,7 +50,7 @@ public class InputActor extends BaseActor {
 
       SingleStep next = RuntimeConfiguration.step(0);
       if(next != null) {
-        ActorSelection nextActor = context().actorSelection("../" + next.getCls().getCanonicalName());
+        ActorSelection nextActor = context().actorSelection("../" + next.getName());
         nextActor.tell(new LogLineImpl(next.getNumber(), fields), self());
       }
     }

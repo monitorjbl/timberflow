@@ -12,13 +12,11 @@ import java.util.Map;
 
 @Plugin(dslName = "file", configParser = FileOutputConfigParser.class)
 public class FileOutput implements Output<FileOutputConfig> {
-  private final String path;
   private final FileWriter output;
 
-  public FileOutput(String path) {
-    this.path = path;
+  public FileOutput(FileOutputConfig config) {
     try {
-      this.output = new FileWriter(path);
+      this.output = new FileWriter(config.getPath());
     } catch(IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -28,6 +26,7 @@ public class FileOutput implements Output<FileOutputConfig> {
   public void apply(LogLine logLine, FileOutputConfig config) {
     try {
       output.write(serialize(config.getType(), logLine.getFields()) + "\n");
+      output.flush();
     } catch(IOException e) {
       e.printStackTrace();
     }

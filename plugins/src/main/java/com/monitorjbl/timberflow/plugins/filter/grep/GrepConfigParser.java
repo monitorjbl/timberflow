@@ -38,7 +38,7 @@ public class GrepConfigParser implements ConfigParser<GrepConfig> {
   @Override
   public GrepConfig generateConfig(PluginContent dslPlugin) {
     List<Extract> extracts = new ArrayList<>();
-    List<KeyValue> kvList = dslPlugin.getMultiProperties().get("match");
+    List<KeyValue> kvList = dslPlugin.getMultiProperties().get("extract");
     if(kvList != null) {
       kvList.forEach(m -> extracts.add(generateMatch(m.getKey(), m.getValue())));
     }

@@ -3,6 +3,7 @@ package com.monitorjbl.timberflow.reflection;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
 public class ObjectCreator {
@@ -10,13 +11,14 @@ public class ObjectCreator {
     return newInstance(cls, new Object[0]);
   }
 
+  @SuppressWarnings("unchecked")
   public static <E> E newInstance(Class<E> cls, Object[] args) {
     Constructor c = null;
     try {
       c = findConstructor(cls, args);
       return (E) c.newInstance(args);
     } catch(Exception e) {
-      throw new ConstructorInstantiationException("Could not instantiate " + cls.getCanonicalName(), e);
+      throw new ConstructorInstantiationException("Could not instantiate " + cls.getCanonicalName() + " with arguments " + asList(args), e);
     }
   }
 

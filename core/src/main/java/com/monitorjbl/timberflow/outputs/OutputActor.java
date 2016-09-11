@@ -2,21 +2,20 @@ package com.monitorjbl.timberflow.outputs;
 
 import akka.actor.ActorSelection;
 import com.monitorjbl.timberflow.BaseActor;
+import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.api.LogLine;
 import com.monitorjbl.timberflow.api.Output;
-import com.monitorjbl.timberflow.RuntimeConfiguration;
 import com.monitorjbl.timberflow.domain.ActorConfig;
 import com.monitorjbl.timberflow.domain.LogLineImpl;
 import com.monitorjbl.timberflow.domain.SingleStep;
-import com.monitorjbl.timberflow.reflection.ObjectCreator;
 
 public class OutputActor extends BaseActor {
 
   private final Output output;
 
-  public OutputActor(Class<? extends Output> outputClass, ActorConfig config, Object... constructorArgs) {
+  public OutputActor(Class<? extends Output> outputClass, ActorConfig config) {
     super(config);
-    this.output = ObjectCreator.newInstance(outputClass, constructorArgs);
+    this.output = instiatiatePlugin(outputClass, config);
   }
 
   @Override

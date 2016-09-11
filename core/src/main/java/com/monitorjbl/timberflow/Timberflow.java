@@ -53,17 +53,17 @@ public class Timberflow {
   @Option(name = "--plugins", usage = "Path to the plugins directory (defaults to ${TIMBERFLOW_HOME}/plugins)")
   private File pluginsDir = new File(classLocation() + "/../plugins");
 
-  private Map<Class, List<ActorRef>> actors = new HashMap<>();
-  private Map<Class, ActorRef> routers = new HashMap<>();
+  private Map<String, List<ActorRef>> routedActors = new HashMap<>();
+  private Map<String, ActorRef> routers = new HashMap<>();
 
   private void createRouters(ActorSystem system) {
-    actors.entrySet().stream()
+    routedActors.entrySet().stream()
         .collect(toMap(
             e -> e.getKey(),
             e -> e.getValue().stream()
                 .map(r -> r.path().toString())
                 .collect(toList())))
-        .forEach((key, value) -> routers.put(key, system.actorOf(new RoundRobinGroup(value).props(), key.getCanonicalName())));
+        .forEach((key, value) -> routers.put(key, system.actorOf(new RoundRobinGroup(value).props(), key)));
   }
 
   private DSL compile(String source, List<PluginJar> pluginJars) {
@@ -82,22 +82,23 @@ public class Timberflow {
 
   private void startActor(ActorSystem system, Class baseActor, DSLPlugin plugin) {
     List<Object> props = plugin.getActorConfig().getConfig().getConstructorArgs();
-    if(!actors.containsKey(plugin.getCls())) {
-      actors.put(plugin.getCls(), new ArrayList<>());
-    }
 
     log.debug("Starting {} with {} instances", plugin.getCls(), plugin.getActorConfig().getInstances());
     if(plugin.getActorConfig().getInstances() == 1) {
-      actors.get(plugin.getCls()).add(system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName()));
+      system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName());
     } else {
+      if(!routedActors.containsKey(plugin.getName())) {
+        routedActors.put(plugin.getName(), new ArrayList<>());
+      }
       for(int i = 0; i < plugin.getActorConfig().getInstances(); i++) {
-        actors.get(plugin.getCls()).add(system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName() + "-" + i));
+        routedActors.get(plugin.getName()).add(system.actorOf(props(baseActor, plugin.getCls(), plugin.getActorConfig(), props), plugin.getName() + "-" + i));
       }
     }
   }
 
   private Props props(Class baseActor, Class pluginClass, ActorConfig config, List<Object> props) {
-    return Props.create(baseActor, pluginClass, config, props.toArray(new Object[props.size()])).withMailbox("bounded-mailbox");
+    return Props.create(baseActor, pluginClass, config).withMailbox("bounded-mailbox");
+//    return Props.create(baseActor, pluginClass, config, props.toArray(new Object[props.size()]));
   }
 
   private List<PluginJar> loadPlugins() {
@@ -121,13 +122,13 @@ public class Timberflow {
     ActorSystem system = ActorSystem.create("timberflow");
     system.actorOf(Props.create(MonitorActor.class), "monitor");
 
-    log.debug("Starting filter actors");
+    log.debug("Starting filter routedActors");
     dsl.filterPlugins().forEach(filter -> startActor(system, FilterActor.class, filter));
 
-    log.debug("Starting output actors");
+    log.debug("Starting output routedActors");
     dsl.outputPlugins().forEach(output -> startActor(system, OutputActor.class, output));
 
-    log.debug("Starting input actors");
+    log.debug("Starting input routedActors");
     dsl.inputPlugins().forEach(input -> startActor(system, InputActor.class, input));
 
     log.debug("Starting routers");
